@@ -1,0 +1,242 @@
+{
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^bl-(.*)": "@/components/bl-$1/bl-$1.vue"
+		}
+	},
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "金榔记 · 开码有奖",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/auth/login",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "微信快捷登录",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/record/record",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "兑奖记录"
+			}
+		},
+		{
+			"path": "pages/rules/rules",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "活动规则"
+			}
+		},
+		{
+			"path": "pages/redeem/redeem",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "输码兑奖"
+			}
+		},
+		{
+			"path": "pages/record/detail",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "领奖凭证"
+			}
+		},
+		{
+			"path": "pages/coupon/coupon",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "我的优惠券"
+			}
+		},
+		{
+			"path": "pages/notice/notice",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "服务通知"
+			}
+		},
+		{
+			"path": "pages/user/user",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "个人中心"
+			}
+		},
+		{
+			"path": "pages/store/list",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "可核销门店"
+			}
+		},
+		{
+			"path": "pages/legal/legal",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "协议说明"
+			}
+		}
+	],
+	"subPackages": [
+		{
+			"root": "pagesStore",
+			"pages": [
+				{
+					"path": "login/login",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "门店登录"
+					}
+				},
+				{
+					"path": "home/home",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "门店工作台"
+					}
+				},
+				{
+					"path": "scan/scan",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "扫码核销"
+					}
+				},
+				{
+					"path": "input/input",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "输码核销"
+					}
+				},
+				{
+					"path": "confirm/confirm",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "核销确认"
+					}
+				},
+				{
+					"path": "orders/orders",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "核销订单"
+					}
+				},
+				{
+					"path": "orders/detail",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "订单详情"
+					}
+				},
+				{
+					"path": "stats/stats",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "门店数据"
+					}
+				},
+				{
+					"path": "logs/logs",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "核销日志"
+					}
+				},
+				{
+					"path": "prize/prize",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "奖品库"
+					}
+				},
+				{
+					"path": "staff/staff",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "员工管理"
+					}
+				},
+				{
+					"path": "me/me",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "门店中心"
+					}
+				}
+			]
+		},
+		{
+			"root": "pagesSales",
+			"pages": [
+				{
+					"path": "login/login",
+					"style": { "navigationStyle": "custom", "navigationBarTitleText": "销售登录" }
+				},
+				{
+					"path": "stores/stores",
+					"style": { "navigationStyle": "custom", "navigationBarTitleText": "我的门店" }
+				},
+				{
+					"path": "store/edit",
+					"style": { "navigationStyle": "custom", "navigationBarTitleText": "门店资料" }
+				},
+				{
+					"path": "accounts/accounts",
+					"style": { "navigationStyle": "custom", "navigationBarTitleText": "门店账号" }
+				}
+			]
+		}
+	],
+	"preloadRule": {
+		"pages/index/index": {
+			"network": "all",
+			"packages": ["pagesStore"]
+		}
+	},
+	"tabBar": {
+		"color": "#94A39A",
+		"selectedColor": "#0E3B2E",
+		"backgroundColor": "#FFFFFF",
+		"borderStyle": "white",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "static/tabbar/home.png",
+				"selectedIconPath": "static/tabbar/home-on.png"
+			},
+			{
+				"pagePath": "pages/record/record",
+				"text": "兑奖记录",
+				"iconPath": "static/tabbar/record.png",
+				"selectedIconPath": "static/tabbar/record-on.png"
+			},
+			{
+				"pagePath": "pages/rules/rules",
+				"text": "活动规则",
+				"iconPath": "static/tabbar/rules.png",
+				"selectedIconPath": "static/tabbar/rules-on.png"
+			}
+		]
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "金榔记 · 开码有奖",
+		"navigationBarBackgroundColor": "#F5F1E8",
+		"backgroundColor": "#F5F1E8",
+		"backgroundColorTop": "#F5F1E8",
+		"backgroundColorBottom": "#F5F1E8"
+	},
+	"uniIdRouter": {}
+}

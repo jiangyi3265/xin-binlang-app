@@ -1,0 +1,89 @@
+/**
+ * 金榔记 · 开码有奖  —— 设计令牌
+ * 品牌语言：墨绿（槟榔叶）+ 烫金（槟榔果）+ 宣纸米白 + 朱砂印章
+ * 所有页面样式只允许引用这里的变量，不要写死色值。
+ */
+
+/* ============ 品牌色 ============ */
+$bl-green: #0E3B2E; // 主色 · 墨绿
+$bl-green-2: #17553F; // 主色浅一档
+$bl-green-3: #2C7256; // 点缀绿
+$bl-green-lt: #E7EFEA; // 绿色浅底
+$bl-green-ink: #0A2B21; // 更深，用于渐变尾
+
+$bl-gold: #B8892B; // 品牌金（描边/强调文字）
+$bl-gold-2: #D9A94A; // 亮金
+$bl-gold-3: #F0D79A; // 浅金（分隔线/高光）
+$bl-gold-lt: #FAF1DC; // 金色浅底
+
+$bl-red: #C0392B; // 朱砂（中奖/警示/印章）
+$bl-red-2: #E05A46;
+$bl-red-lt: #FCEDEA;
+
+$bl-blue: #2F6D8C; // 信息蓝（少量）
+$bl-blue-lt: #EAF2F6;
+
+/* ============ 中性色 ============ */
+$bl-ink: #16261F; // 主文字
+$bl-ink-2: #4A5C52; // 次级文字
+$bl-ink-3: #8B9A92; // 弱化文字
+$bl-ink-4: #B4BFB8; // 占位文字
+$bl-line: #E6E1D4; // 分隔线（米色系）
+$bl-line-2: #F0ECE1; // 更浅分隔
+$bl-paper: #F5F1E8; // 页面底色 · 宣纸
+$bl-paper-2: #FBF8F1; // 次级底色
+$bl-card: #FFFFFF;
+$bl-mask: rgba(10, 26, 20, 0.62);
+
+/* ============ 状态色 ============ */
+$bl-ok: #2C7256; // 已核销 / 成功
+$bl-warn: #C88A1E; // 待核销 / 临期
+$bl-fail: #98A49D; // 未中奖 / 失效
+$bl-danger: #C0392B; // 过期 / 拦截
+
+/* ============ 圆角 ============ */
+$bl-r-xs: 8rpx;
+$bl-r-sm: 12rpx;
+$bl-r-md: 18rpx;
+$bl-r-lg: 24rpx;
+$bl-r-xl: 32rpx;
+$bl-r-pill: 999rpx;
+
+/* ============ 阴影 ============ */
+$bl-sd-sm: 0 4rpx 16rpx rgba(22, 38, 31, 0.05);
+$bl-sd-md: 0 10rpx 32rpx rgba(22, 38, 31, 0.07);
+$bl-sd-lg: 0 20rpx 56rpx rgba(14, 59, 46, 0.16);
+$bl-sd-gold: 0 12rpx 32rpx rgba(184, 137, 43, 0.24);
+$bl-sd-green: 0 12rpx 32rpx rgba(14, 59, 46, 0.22);
+
+/* ============ 字号 ============ */
+$bl-fs-display: 60rpx;
+$bl-fs-h1: 44rpx;
+$bl-fs-h2: 36rpx;
+$bl-fs-h3: 32rpx;
+$bl-fs-body: 28rpx;
+$bl-fs-sm: 26rpx;
+$bl-fs-xs: 24rpx;
+$bl-fs-tiny: 22rpx;
+
+/* ============ 间距 ============ */
+$bl-gap: 24rpx;
+$bl-pad: 32rpx; // 页面左右安全边距
+
+/* ============ 兼容 uni-app 内置变量（插件市场组件会用到） ============ */
+$uni-color-primary: $bl-green;
+$uni-color-success: $bl-ok;
+$uni-color-warning: $bl-warn;
+$uni-color-error: $bl-danger;
+$uni-text-color: $bl-ink;
+$uni-text-color-grey: $bl-ink-3;
+$uni-text-color-placeholder: $bl-ink-4;
+$uni-bg-color: $bl-paper;
+$uni-bg-color-grey: $bl-paper-2;
+$uni-border-color: $bl-line;
+$uni-font-size-sm: $bl-fs-xs;
+$uni-font-size-base: $bl-fs-body;
+$uni-font-size-lg: $bl-fs-h3;
+$uni-border-radius-base: $bl-r-sm;
+$uni-spacing-row-base: 20rpx;
+$uni-spacing-col-base: 16rpx;

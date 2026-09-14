@@ -53,13 +53,13 @@ pnpm run build:mp-weixin
 - `check` 验证页面路由、图标、组件、资源体积、游客浏览与二维码结构。
 - 构建完成后的 `sync-mp-static.mjs` 确保小程序静态资源和 tabBar 图标完整。
 
-`manifest.json` 的 uni-app AppID 与微信 AppID 均待填写为新甲方自己的标识。正式微信登录需：
+`manifest.json` 已配置微信 AppID `wx8887b61da8f2edd6`。H5 使用 `https://xbinglangs.oksja.cn/app/`，CI 和发布流程均构建至该生产 API。uni-app 的 DCloud AppID 保持待配置，仅在后续需要对应原生 App 能力时补充。微信登录配置：
 
 1. 在前端环境设置独立 HTTPS `VITE_API_ORIGIN` 和 `VITE_USE_WECHAT_LOGIN=true`。
 2. 在微信公众平台设置本项目 request 合法域名。
 3. 在后端配置对应 `WECHAT_APP_ID`、`WECHAT_APP_SECRET`，如需消息通知再配置订阅模板。
 
-所有 `VITE_*` 变量都会进入客户端构建产物，只能存放公开配置。AppSecret、数据库密码及签名密钥只存于后端。默认本地配置和 CI 产物用于构建验证，不能直接用于真机生产运行。
+所有 `VITE_*` 变量都会进入客户端构建产物，只能存放公开配置。AppSecret、数据库密码及签名密钥只存于后端。本地开发默认使用回环地址；生产构建在 `.env.production` 中配置上述 API 和微信登录开关。CI 产物已使用本项目生产域名，可导入微信开发者工具验证；提交审核和正式发布仍需在微信平台完成。
 
 ## 项目结构
 

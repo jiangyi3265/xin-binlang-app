@@ -23,8 +23,8 @@ jobs:
       - run: pnpm run check
       - name: Build H5 and WeChat mini program
         env:
-          VITE_API_ORIGIN: http://127.0.0.1:8897
-          VITE_USE_WECHAT_LOGIN: "false"
+          VITE_API_ORIGIN: https://xbinglangs.oksja.cn
+          VITE_USE_WECHAT_LOGIN: "true"
         run: |
           pnpm run build:h5
           pnpm run build:mp-weixin

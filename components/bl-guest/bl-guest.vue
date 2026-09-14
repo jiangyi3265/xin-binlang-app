@@ -1,17 +1,17 @@
 <template>
 	<view class="gs bl-card">
 		<view class="gs-ico">
-			<bl-icon :name="icon" :size="66" color="#B8892B" :weight="1.6" />
+			<bl-icon :name="icon" :size="66" color="#94692B" :weight="1.6" />
 		</view>
 		<text class="gs-t">{{ title }}</text>
 		<text class="gs-d">{{ desc }}</text>
 		<view class="gs-btn bl-btn bl-btn-primary" @tap="login">
-			<bl-icon name="message-circle" :size="32" color="#FFF8E8" :weight="2" />
+			<bl-icon name="message-circle" :size="32" color="#F5F9FD" :weight="2" />
 			<text class="gs-btn-t">微信登录</text>
 		</view>
 		<view v-if="browse" class="gs-alt" @tap="$emit('browse')">
 			<text>{{ browse }}</text>
-			<bl-icon name="chevron-right" :size="22" color="#8B9A92" :weight="2" />
+			<bl-icon name="chevron-right" :size="22" color="#60768C" :weight="2" />
 		</view>
 		<text class="gs-note">不登录也可以浏览活动详情、奖品与可核销门店</text>
 	</view>

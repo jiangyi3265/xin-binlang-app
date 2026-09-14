@@ -5,7 +5,7 @@
 		<!-- 店员无数据查看权限 -->
 		<view v-if="!canView" class="deny">
 			<view class="deny-ico">
-				<bl-icon name="lock" :size="72" color="#B4BFB8" :weight="1.5" />
+				<bl-icon name="lock" :size="72" color="#9AAEBF" :weight="1.5" />
 			</view>
 			<text class="deny-t">店员账号无数据查看权限</text>
 			<text class="deny-d">按门店权限体系，店员仅可执行扫码 / 输码核销，
@@ -19,7 +19,7 @@
 		<template v-else>
 			<view class="bl-wrap">
 				<view class="search">
-					<bl-icon name="search" :size="30" color="#8B9A92" :weight="1.9" />
+					<bl-icon name="search" :size="30" color="#60768C" :weight="1.9" />
 					<input class="search-in" v-model="kw" placeholder="搜索核销码 / 订单号 / 顾客"
 						placeholder-class="search-ph" />
 					<view v-if="kw" @tap="kw = ''">
@@ -62,7 +62,7 @@
 					<view class="od-f">
 						<view class="od-f-l">
 							<bl-icon :name="r.status === 'verified' ? 'check-circle' : 'clock'" :size="24"
-								:color="r.status === 'verified' ? '#2C7256' : '#8B9A92'" :weight="1.8" />
+								:color="r.status === 'verified' ? '#4376AB' : '#60768C'" :weight="1.8" />
 							<text class="od-f-t">
 								{{ r.status === 'verified'
 									? fmt(r.verifyAt, 'MM-DD HH:mm') + ' 由 ' + r.verifyByName + ' 核销'
@@ -74,13 +74,13 @@
 						</view>
 						<view v-else class="od-more">
 							<text>详情</text>
-							<bl-icon name="chevron-right" :size="22" color="#8B9A92" :weight="2" />
+							<bl-icon name="chevron-right" :size="22" color="#60768C" :weight="2" />
 						</view>
 					</view>
 				</view>
 
 				<view v-if="list.length" class="exp" @tap="exportXls">
-					<bl-icon name="file-spreadsheet" :size="30" color="#2C7256" :weight="1.8" />
+					<bl-icon name="file-spreadsheet" :size="30" color="#4376AB" :weight="1.8" />
 					<text class="exp-t">导出当前筛选结果（Excel）</text>
 				</view>
 			</view>
@@ -400,7 +400,7 @@
 		margin-top: 30rpx;
 		height: 88rpx;
 		border-radius: $bl-r-md;
-		border: 1rpx dashed rgba(44, 114, 86, 0.4);
+		border: 1rpx dashed rgba(67, 118, 171, 0.4);
 		background: rgba(231, 239, 234, 0.6);
 		display: flex;
 		align-items: center;

@@ -4,7 +4,7 @@
 
 		<view class="bl-wrap">
 			<view class="tip">
-				<bl-icon name="users" :size="30" color="#2C7256" :weight="1.8" />
+				<bl-icon name="users" :size="30" color="#4376AB" :weight="1.8" />
 				<view class="tip-txt">
 					<text class="tip-t">本店共 {{ list.length }} 个账号</text>
 					<text class="tip-d">店主可创建店员账号；店员仅能执行核销，无数据查看与设置权限</text>
@@ -26,7 +26,7 @@
 					<view class="sf-perm">
 						<view v-for="(p, i) in perms(a.role)" :key="i" class="sf-p" :class="{ no: !p.on }">
 							<bl-icon :name="p.on ? 'check' : 'x'" :size="18"
-								:color="p.on ? '#2C7256' : '#B4BFB8'" :weight="2.6" />
+								:color="p.on ? '#4376AB' : '#9AAEBF'" :weight="2.6" />
 							<text class="sf-p-t">{{ p.t }}</text>
 						</view>
 					</view>
@@ -37,7 +37,7 @@
 			</view>
 
 			<view v-if="me.role === 'owner'" class="add" @tap="showAdd = !showAdd">
-				<bl-icon name="plus" :size="34" color="#0E3B2E" :weight="2" />
+				<bl-icon name="plus" :size="34" color="#102E53" :weight="2" />
 				<text class="add-t">新增店员账号</text>
 			</view>
 
@@ -53,7 +53,7 @@
 			</view>
 
 			<view class="note">
-				<bl-icon name="info" :size="24" color="#8B9A92" :weight="1.8" />
+				<bl-icon name="info" :size="24" color="#60768C" :weight="1.8" />
 				<text class="note-t">账号创建、停用和重置密码均由服务端校验并记录操作日志。</text>
 			</view>
 		</view>
@@ -133,7 +133,7 @@
 		align-items: flex-start;
 		padding: 22rpx;
 		background: $bl-green-lt;
-		border: 1rpx solid rgba(44, 114, 86, 0.2);
+		border: 1rpx solid rgba(67, 118, 171, 0.2);
 		border-radius: $bl-r-md;
 	}
 
@@ -248,7 +248,7 @@
 		margin-top: 26rpx;
 		height: 100rpx;
 		border-radius: $bl-r-md;
-		border: 1rpx dashed rgba(14, 59, 46, 0.32);
+		border: 1rpx dashed rgba(16, 46, 83, 0.32);
 		background: rgba(255, 255, 255, 0.7);
 		display: flex;
 		align-items: center;

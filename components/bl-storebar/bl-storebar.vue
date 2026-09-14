@@ -3,7 +3,7 @@
 		<view class="sb">
 			<view v-for="(it, i) in list" :key="i" class="sb-i" @tap="go(it)">
 				<view class="sb-ico">
-					<bl-icon :name="it.icon" :size="42" :color="active === it.key ? '#0E3B2E' : '#9AA8A0'"
+					<bl-icon :name="it.icon" :size="42" :color="active === it.key ? '#102E53' : '#9AA8A0'"
 						:weight="active === it.key ? 2 : 1.7" />
 					<view v-if="it.dot" class="sb-dot"><text>{{ it.dot > 99 ? '99+' : it.dot }}</text></view>
 				</view>

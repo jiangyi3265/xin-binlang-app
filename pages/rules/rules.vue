@@ -28,7 +28,7 @@
 				<view v-for="(s, i) in cfg.steps" :key="i" class="step-i bl-card">
 					<view class="step-no"><text>0{{ i + 1 }}</text></view>
 					<view class="step-ico">
-						<bl-icon :name="s.icon" :size="44" color="#0E3B2E" :weight="1.7" />
+						<bl-icon :name="s.icon" :size="44" color="#102E53" :weight="1.7" />
 					</view>
 					<text class="step-t">{{ s.t }}</text>
 					<text class="step-d">{{ s.d }}</text>
@@ -44,7 +44,7 @@
 				</view>
 			</view>
 			<view class="pool-tip">
-				<bl-icon name="layers" :size="28" color="#B8892B" :weight="1.8" />
+				<bl-icon name="layers" :size="28" color="#94692B" :weight="1.8" />
 				<text class="pool-tip-t">不同售价档位的兑换码对应各自独立的奖池，奖品不跨池发放，低价产品不会开出高价奖品。</text>
 			</view>
 			<view v-for="p in pools" :key="p.id" class="pool bl-card">
@@ -101,7 +101,7 @@
 					<view class="term-h">
 						<text class="term-t">{{ t.t }}</text>
 						<bl-icon :name="open === i ? 'chevron-up' : 'chevron-down'" :size="28"
-							color="#8B9A92" :weight="2" />
+							color="#60768C" :weight="2" />
 					</view>
 					<view v-if="open === i" class="term-b">
 						<text class="term-d">{{ t.d }}</text>
@@ -120,25 +120,25 @@
 			</view>
 			<view class="svc bl-card">
 				<view v-if="cfg.service.phone" class="svc-i" @tap="call">
-					<view class="svc-ico" style="background:#E7EFEA">
-						<bl-icon name="phone" :size="36" color="#2C7256" :weight="1.8" />
+					<view class="svc-ico" style="background:#E6EFF8">
+						<bl-icon name="phone" :size="36" color="#4376AB" :weight="1.8" />
 					</view>
 					<view class="svc-txt">
 						<text class="svc-t">客服热线</text>
 						<text class="svc-d">{{ cfg.service.phone }} · {{ cfg.service.time }}</text>
 					</view>
-					<bl-icon name="chevron-right" :size="26" color="#B4BFB8" :weight="2" />
+					<bl-icon name="chevron-right" :size="26" color="#9AAEBF" :weight="2" />
 				</view>
 				<view v-if="cfg.service.phone && cfg.service.wechat" class="bl-hr"></view>
 				<view v-if="cfg.service.wechat" class="svc-i" @tap="copyWx">
-					<view class="svc-ico" style="background:#FAF1DC">
-						<bl-icon name="message-circle" :size="36" color="#B8892B" :weight="1.8" />
+					<view class="svc-ico" style="background:#F6EEDC">
+						<bl-icon name="message-circle" :size="36" color="#94692B" :weight="1.8" />
 					</view>
 					<view class="svc-txt">
 						<text class="svc-t">在线客服微信</text>
 						<text class="svc-d">{{ cfg.service.wechat }}（点击复制）</text>
 					</view>
-					<bl-icon name="copy" :size="26" color="#B4BFB8" :weight="2" />
+					<bl-icon name="copy" :size="26" color="#9AAEBF" :weight="2" />
 				</view>
 			</view>
 
@@ -207,7 +207,7 @@
 		top: 0;
 		right: 0;
 		bottom: 0;
-		background: linear-gradient(175deg, rgba(10, 43, 33, 0.88), rgba(14, 59, 46, 0.92));
+		background: linear-gradient(175deg, rgba(9, 31, 59, 0.88), rgba(16, 46, 83, 0.92));
 	}
 
 	.hero-in {
@@ -223,14 +223,14 @@
 		width: 78rpx;
 		height: 78rpx;
 		border-radius: 12rpx;
-		background: linear-gradient(140deg, #C8402F, #A32A1D);
+		background: linear-gradient(140deg, #D6B16D, #A97834);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.28);
 
 		text {
-			color: #FFF0DC;
+			color: #F5F9FD;
 			font-size: 40rpx;
 			font-weight: 800;
 		}
@@ -240,7 +240,7 @@
 		margin-top: 22rpx;
 		font-size: 40rpx;
 		font-weight: 800;
-		color: #FFF6E6;
+		color: #F5F9FD;
 		letter-spacing: 3rpx;
 	}
 
@@ -271,14 +271,14 @@
 		box-shadow: 0 0 0 6rpx rgba(110, 211, 155, 0.18);
 
 		&.off {
-			background: #B4BFB8;
+			background: #9AAEBF;
 			box-shadow: none;
 		}
 	}
 
 	.hero-st-t {
 		font-size: 22rpx;
-		color: #FFF6E6;
+		color: #F5F9FD;
 	}
 
 	/* ============ 步骤 ============ */
@@ -445,7 +445,7 @@
 		width: 150rpx;
 		height: 150rpx;
 		border-radius: $bl-r-sm;
-		background: rgba(22, 38, 31, 0.55);
+		background: rgba(23, 45, 69, 0.55);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -484,7 +484,7 @@
 		flex-shrink: 0;
 
 		text {
-			color: #FFF6E6;
+			color: #F5F9FD;
 			font-size: 22rpx;
 			font-weight: 700;
 		}
@@ -493,7 +493,7 @@
 	.vf-line {
 		flex: 1;
 		width: 2rpx;
-		background: rgba(14, 59, 46, 0.14);
+		background: rgba(16, 46, 83, 0.14);
 		margin: 6rpx 0;
 	}
 

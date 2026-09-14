@@ -18,7 +18,7 @@
 			value: { type: String, required: true },
 			/* 二维码整体边长（含静区），单位 rpx */
 			size: { type: Number, default: 380 },
-			color: { type: String, default: '#0E3B2E' }
+			color: { type: String, default: '#102E53' }
 		},
 		data() {
 			return { matrix: null }

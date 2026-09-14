@@ -82,7 +82,7 @@
 
 		text {
 			font-size: 24rpx;
-			color: #FFF6E6;
+			color: #F5F9FD;
 		}
 	}
 
@@ -110,7 +110,7 @@
 		top: 0;
 		right: 0;
 		bottom: 0;
-		background: linear-gradient(180deg, rgba(6, 26, 20, 0.95), rgba(10, 43, 33, 0.92));
+		background: linear-gradient(180deg, rgba(6, 26, 20, 0.95), rgba(9, 31, 59, 0.92));
 	}
 
 	.frame {

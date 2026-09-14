@@ -56,10 +56,10 @@
 				return this.bg === 'transparent' || this.bg === 'green'
 			},
 			textColor() {
-				return this.dark ? '#FFF8E8' : '#16261F'
+				return this.dark ? '#F5F9FD' : '#172D45'
 			},
 			iconColor() {
-				return this.dark ? '#FFF8E8' : '#16261F'
+				return this.dark ? '#F5F9FD' : '#172D45'
 			},
 			rootStyle() {
 				return ''

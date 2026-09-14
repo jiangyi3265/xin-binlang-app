@@ -3,13 +3,13 @@
 		<bl-navbar title="门店数据" bg="paper" home="/pagesStore/home/home">
 			<template #right>
 				<view class="nav-r" @tap="exportXls">
-					<bl-icon name="download" :size="32" color="#16261F" :weight="1.8" />
+					<bl-icon name="download" :size="32" color="#172D45" :weight="1.8" />
 				</view>
 			</template>
 		</bl-navbar>
 
 		<view v-if="!canView" class="deny">
-			<bl-icon name="lock" :size="72" color="#B4BFB8" :weight="1.5" />
+			<bl-icon name="lock" :size="72" color="#9AAEBF" :weight="1.5" />
 			<text class="deny-t">店员账号无数据查看权限</text>
 		</view>
 
@@ -44,8 +44,8 @@
 				<!-- ============ 累计 ============ -->
 				<view class="cards">
 					<view class="c bl-card">
-						<view class="c-ico" style="background:#E7EFEA">
-							<bl-icon name="badge-check" :size="34" color="#2C7256" :weight="1.8" />
+						<view class="c-ico" style="background:#E6EFF8">
+							<bl-icon name="badge-check" :size="34" color="#4376AB" :weight="1.8" />
 						</view>
 						<text class="c-n bl-num">{{ st.totalVerify }}</text>
 						<text class="c-l">累计核销量</text>
@@ -58,8 +58,8 @@
 						<text class="c-l">待核销</text>
 					</view>
 					<view class="c bl-card">
-						<view class="c-ico" style="background:#FAF1DC">
-							<bl-icon name="coins" :size="34" color="#B8892B" :weight="1.8" />
+						<view class="c-ico" style="background:#F6EEDC">
+							<bl-icon name="coins" :size="34" color="#94692B" :weight="1.8" />
 						</view>
 						<text class="c-n bl-num">¥{{ st.totalValue }}</text>
 						<text class="c-l">累计奖品价值</text>
@@ -136,7 +136,7 @@
 				</view>
 
 				<view class="exp" @tap="exportXls">
-					<bl-icon name="file-spreadsheet" :size="32" color="#2C7256" :weight="1.8" />
+					<bl-icon name="file-spreadsheet" :size="32" color="#4376AB" :weight="1.8" />
 					<text class="exp-t">导出门店数据报表（Excel）</text>
 				</view>
 			</view>
@@ -222,7 +222,7 @@
 	.today {
 		margin-top: 14rpx;
 		border-radius: $bl-r-lg;
-		background: linear-gradient(120deg, #14332A 0%, #0B241C 100%);
+		background: linear-gradient(120deg, #14385E 0%, #0B2445 100%);
 		padding: 28rpx 26rpx 24rpx;
 		box-shadow: $bl-sd-green;
 	}
@@ -236,7 +236,7 @@
 		flex: 1;
 		font-size: 28rpx;
 		font-weight: 700;
-		color: #FFF6E6;
+		color: #F5F9FD;
 	}
 
 	.today-h-d {
@@ -259,7 +259,7 @@
 
 	.today-n {
 		font-size: 44rpx;
-		color: #F0D79A;
+		color: #E5C58A;
 	}
 
 	.today-l {
@@ -346,7 +346,7 @@
 	.bar-fill {
 		width: 100%;
 		border-radius: 8rpx;
-		background: linear-gradient(180deg, #2C7256, #17553F);
+		background: linear-gradient(180deg, #4376AB, #244D7A);
 
 		&.today {
 			background: linear-gradient(180deg, #F3D689, $bl-gold);
@@ -416,7 +416,7 @@
 	.dist-fill {
 		height: 100%;
 		border-radius: 6rpx;
-		background: linear-gradient(90deg, #2C7256, #17553F);
+		background: linear-gradient(90deg, #4376AB, #244D7A);
 	}
 
 	/* 排行 */
@@ -518,7 +518,7 @@
 		margin-top: 30rpx;
 		height: 92rpx;
 		border-radius: $bl-r-md;
-		border: 1rpx dashed rgba(44, 114, 86, 0.4);
+		border: 1rpx dashed rgba(67, 118, 171, 0.4);
 		background: rgba(231, 239, 234, 0.6);
 		display: flex;
 		align-items: center;

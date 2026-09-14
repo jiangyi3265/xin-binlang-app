@@ -116,9 +116,9 @@
 	import { fmt } from '@/utils/date.js'
 
 	const ST = {
-		pending: { t: '待核销', d: '顾客到店后请核对信息并当面交付奖品', i: 'clock', c: '#B8892B', cls: 'wait' },
-		verified: { t: '已核销', d: '奖品已发放，凭证已失效', i: 'badge-check', c: '#2C7256', cls: 'ok' },
-		expired: { t: '已过期', d: '超过 30 天未核销，系统已自动失效', i: 'timer', c: '#8B9A92', cls: 'dead' },
+		pending: { t: '待核销', d: '顾客到店后请核对信息并当面交付奖品', i: 'clock', c: '#94692B', cls: 'wait' },
+		verified: { t: '已核销', d: '奖品已发放，凭证已失效', i: 'badge-check', c: '#4376AB', cls: 'ok' },
+		expired: { t: '已过期', d: '超过 30 天未核销，系统已自动失效', i: 'timer', c: '#60768C', cls: 'dead' },
 		frozen: { t: '已冻结', d: '总部已冻结该订单，暂不可核销', i: 'lock', c: '#C0392B', cls: 'no' }
 	}
 
@@ -177,7 +177,7 @@
 
 		&.ok {
 			background: $bl-green-lt;
-			border-color: rgba(44, 114, 86, 0.26);
+			border-color: rgba(67, 118, 171, 0.26);
 		}
 
 		&.dead {

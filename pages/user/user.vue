@@ -7,7 +7,7 @@
 			<view class="top-in">
 				<image v-if="logged && user.avatar" class="ava" :src="user.avatar" mode="aspectFill" />
 				<view v-else class="ava ava-guest">
-					<bl-icon name="user" :size="52" color="#F0D79A" :weight="1.7" />
+					<bl-icon name="user" :size="52" color="#E5C58A" :weight="1.7" />
 				</view>
 				<view v-if="logged" class="top-txt">
 					<view class="top-n">
@@ -37,7 +37,7 @@
 				</view>
 				<view class="stat-x"></view>
 				<view class="stat-i" @tap="goTab('/pages/record/record')">
-					<text class="stat-n bl-num" style="color:#B8892B">{{ win }}</text>
+					<text class="stat-n bl-num" style="color:#94692B">{{ win }}</text>
 					<text class="stat-l">中奖次数</text>
 				</view>
 				<view class="stat-x"></view>
@@ -65,7 +65,7 @@
 			</view>
 
 			<view v-if="logged" class="logout bl-btn bl-btn-line" @tap="logout">
-				<bl-icon name="log-out" :size="30" color="#8B9A92" :weight="1.9" />
+				<bl-icon name="log-out" :size="30" color="#60768C" :weight="1.9" />
 				<text class="logout-t">退出登录</text>
 			</view>
 
@@ -91,7 +91,7 @@
 			menus() {
 				return [
 					{
-						k: 'record', t: '我的兑奖记录', icon: 'ticket', color: '#B8892B', bg: '#FAF1DC',
+						k: 'record', t: '我的兑奖记录', icon: 'ticket', color: '#94692B', bg: '#F6EEDC',
 						v: this.logged ? this.total + ' 条' : '', url: '/pages/record/record', tab: true
 					},
 					{
@@ -103,15 +103,15 @@
 						v: this.logged && store.unreadNotice() ? store.unreadNotice() + ' 条未读' : '', url: '/pages/notice/notice'
 					},
 					{
-						k: 'store', t: '可核销门店', icon: 'store', color: '#2C7256', bg: '#E7EFEA',
+						k: 'store', t: '可核销门店', icon: 'store', color: '#4376AB', bg: '#E6EFF8',
 						v: store.STORES.length + ' 家', url: '/pages/store/list'
 					},
 					{
-						k: 'rules', t: '活动规则', icon: 'scroll-text', color: '#4A5C52', bg: '#F0EFEA',
+						k: 'rules', t: '活动规则', icon: 'scroll-text', color: '#4F657D', bg: '#F0EFEA',
 						v: '', url: '/pages/rules/rules', tab: true
 					},
 					{
-						k: 'svc', t: '联系客服', icon: 'headphones', color: '#B8892B', bg: '#FAF1DC',
+						k: 'svc', t: '联系客服', icon: 'headphones', color: '#94692B', bg: '#F6EEDC',
 						v: this.cfg.service.phone, url: ''
 					}
 				]
@@ -173,7 +173,7 @@
 		top: 0;
 		right: 0;
 		bottom: 0;
-		background: linear-gradient(175deg, rgba(10, 43, 33, 0.9), rgba(14, 59, 46, 0.94));
+		background: linear-gradient(175deg, rgba(9, 31, 59, 0.9), rgba(16, 46, 83, 0.94));
 	}
 
 	.top-in {
@@ -213,7 +213,7 @@
 	.top-n1 {
 		font-size: 38rpx;
 		font-weight: 800;
-		color: #FFF6E6;
+		color: #F5F9FD;
 		margin-right: 14rpx;
 	}
 

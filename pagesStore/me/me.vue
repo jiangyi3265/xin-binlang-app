@@ -68,11 +68,11 @@
 			<view class="menu bl-card">
 				<view v-for="(m, i) in menus" :key="m.k" class="menu-i" @tap="onMenu(m)">
 					<view class="menu-ico" :style="'background:' + m.bg">
-						<bl-icon :name="m.icon" :size="34" :color="m.locked ? '#B4BFB8' : m.color" :weight="1.8" />
+						<bl-icon :name="m.icon" :size="34" :color="m.locked ? '#9AAEBF' : m.color" :weight="1.8" />
 					</view>
 					<text class="menu-t" :class="{ off: m.locked }">{{ m.t }}</text>
 					<view v-if="m.locked" class="menu-lock">
-						<bl-icon name="lock" :size="22" color="#B4BFB8" :weight="2" />
+						<bl-icon name="lock" :size="22" color="#9AAEBF" :weight="2" />
 					</view>
 					<bl-icon v-else name="chevron-right" :size="26" color="#C3CCC6" :weight="2" />
 					<view v-if="i < menus.length - 1" class="menu-line"></view>
@@ -82,13 +82,13 @@
 			<!-- 权限说明 -->
 			<view class="perm">
 				<view class="perm-h">
-					<bl-icon name="shield-check" :size="28" color="#2C7256" :weight="1.8" />
+					<bl-icon name="shield-check" :size="28" color="#4376AB" :weight="1.8" />
 					<text class="perm-h-t">当前账号权限</text>
 				</view>
 				<view class="perm-g">
 					<view v-for="(p, i) in perms" :key="i" class="perm-i" :class="{ no: !p.on }">
 						<bl-icon :name="p.on ? 'check-circle' : 'x-circle'" :size="26"
-							:color="p.on ? '#2C7256' : '#C3CCC6'" :weight="1.8" />
+							:color="p.on ? '#4376AB' : '#C3CCC6'" :weight="1.8" />
 						<text class="perm-t">{{ p.t }}</text>
 					</view>
 				</view>
@@ -134,12 +134,12 @@
 			menus() {
 				const lock = !this.canView
 				return [
-					{ k: 'orders', t: '核销订单', icon: 'clipboard-list', color: '#2C7256', bg: '#E7EFEA', url: '/pagesStore/orders/orders', locked: lock },
+					{ k: 'orders', t: '核销订单', icon: 'clipboard-list', color: '#4376AB', bg: '#E6EFF8', url: '/pagesStore/orders/orders', locked: lock },
 					{ k: 'stats', t: '门店数据统计', icon: 'bar-chart', color: '#2F6D8C', bg: '#EAF2F6', url: '/pagesStore/stats/stats', locked: lock },
-					{ k: 'logs', t: '核销日志', icon: 'history', color: '#B8892B', bg: '#FAF1DC', url: '/pagesStore/logs/logs', locked: lock },
+					{ k: 'logs', t: '核销日志', icon: 'history', color: '#94692B', bg: '#F6EEDC', url: '/pagesStore/logs/logs', locked: lock },
 					{ k: 'prize', t: '奖品库（只读）', icon: 'gift', color: '#C0392B', bg: '#FCEDEA', url: '/pagesStore/prize/prize', locked: false },
-					{ k: 'staff', t: '员工管理', icon: 'users', color: '#4A5C52', bg: '#F0EFEA', url: '/pagesStore/staff/staff', locked: this.acc.role === 'staff' },
-					{ k: 'switch', t: '切换登录账号', icon: 'refresh-cw', color: '#0E3B2E', bg: '#E7EFEA', url: '/pagesStore/login/login', locked: false }
+					{ k: 'staff', t: '员工管理', icon: 'users', color: '#4F657D', bg: '#F0EFEA', url: '/pagesStore/staff/staff', locked: this.acc.role === 'staff' },
+					{ k: 'switch', t: '切换登录账号', icon: 'refresh-cw', color: '#102E53', bg: '#E6EFF8', url: '/pagesStore/login/login', locked: false }
 				]
 			},
 			perms() {
@@ -213,7 +213,7 @@
 		top: 0;
 		right: 0;
 		bottom: 0;
-		background: linear-gradient(175deg, rgba(10, 43, 33, 0.92), rgba(14, 59, 46, 0.95));
+		background: linear-gradient(175deg, rgba(9, 31, 59, 0.92), rgba(16, 46, 83, 0.95));
 	}
 
 	.top-in {
@@ -245,7 +245,7 @@
 	.top-n {
 		font-size: 36rpx;
 		font-weight: 800;
-		color: #FFF6E6;
+		color: #F5F9FD;
 		margin-right: 12rpx;
 	}
 

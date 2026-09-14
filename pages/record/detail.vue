@@ -24,6 +24,7 @@
 					</view>
 				</view>
 
+				<view v-if="rec.prizeType === 'exchange'" class="exchange-note">到店补 ¥{{ rec.exchangeAmount }}，换购价值 ¥{{ rec.prizeValue }} 的 {{ rec.prizeName }} 1 袋。请在店员确认收款后核销。</view>
 				<!-- 撕口 -->
 				<view class="tk-cut">
 					<view class="tk-cut-l"></view>
@@ -33,13 +34,14 @@
 
 				<!-- 下半：核销码 -->
 				<view class="tk-b">
-					<template v-if="rec.status === 'pending'">
+					<bl-cash-claim v-if="rec.prizeType === 'cash'" ref="cashPanel" :record="rec" @updated="refreshRecord(false)" />
+					<template v-else-if="rec.status === 'pending'">
 						<view class="tk-qr">
-							<bl-qr :value="'JLJ-' + rec.code" :size="360" color="#0E3B2E" />
+							<bl-qr :value="'JLJ-' + rec.code" :size="360" color="#102E53" />
 						</view>
 						<text class="tk-qr-tip">请向门店店员出示此二维码</text>
 						<view class="tk-sync" :class="{ busy: refreshing }" @tap="refreshRecord(true)">
-							<bl-icon name="refresh-cw" :size="25" color="#0E3B2E" :weight="1.8" />
+							<bl-icon name="refresh-cw" :size="25" color="#102E53" :weight="1.8" />
 							<text class="tk-sync-t">{{ refreshing ? '正在刷新核销状态…' : '核销后自动更新，也可点击刷新' }}</text>
 						</view>
 
@@ -49,13 +51,13 @@
 								<text class="tk-code-v bl-num">{{ codeSpaced }}</text>
 							</view>
 							<view class="tk-copy" @tap="copy">
-								<bl-icon name="copy" :size="26" color="#0E3B2E" :weight="1.8" />
+								<bl-icon name="copy" :size="26" color="#102E53" :weight="1.8" />
 								<text class="tk-copy-t">复制</text>
 							</view>
 						</view>
 
 						<view class="tk-cd">
-							<bl-icon name="hourglass" :size="26" :color="urgent ? '#C0392B' : '#B8892B'" :weight="1.8" />
+							<bl-icon name="hourglass" :size="26" :color="urgent ? '#C0392B' : '#94692B'" :weight="1.8" />
 							<text class="tk-cd-t" :class="{ urgent }">
 								剩余 <text class="tk-cd-n">{{ cd.d }}</text> 天
 								<text class="tk-cd-n">{{ pad(cd.h) }}</text> 时
@@ -98,7 +100,7 @@
 			</view>
 
 			<!-- ============ 领取门店 ============ -->
-			<view v-if="rec.status === 'pending'" class="st bl-card">
+			<view v-if="rec.status === 'pending' && rec.prizeType !== 'cash'" class="st bl-card">
 				<view class="st-h">
 					<view class="bl-sec-l">
 						<view class="bl-sec-bar"></view>
@@ -106,7 +108,7 @@
 					</view>
 					<view class="st-h-r" @tap="showPick = true">
 						<text>更换</text>
-						<bl-icon name="chevron-right" :size="22" color="#8B9A92" :weight="2" />
+						<bl-icon name="chevron-right" :size="22" color="#60768C" :weight="2" />
 					</view>
 				</view>
 				<view class="st-body" v-if="preferStore">
@@ -114,7 +116,7 @@
 					<view class="st-txt">
 						<text class="st-n">{{ preferStore.short }}</text>
 						<view class="st-r">
-							<bl-icon name="map-pin" :size="22" color="#8B9A92" :weight="1.8" />
+							<bl-icon name="map-pin" :size="22" color="#60768C" :weight="1.8" />
 							<text class="st-a bl-ellipsis">{{ preferStore.addr }}</text>
 						</view>
 						<view class="st-r">
@@ -124,13 +126,13 @@
 					</view>
 				</view>
 				<view class="st-tip">
-					<bl-icon name="info" :size="24" color="#B8892B" :weight="1.8" />
+					<bl-icon name="info" :size="24" color="#94692B" :weight="1.8" />
 					<text class="st-tip-t">凭证在全部 {{ stores.length }} 家合作门店均可核销，此处仅为默认导航门店</text>
 				</view>
 			</view>
 
 			<!-- ============ 核销流程 ============ -->
-			<view class="flow bl-card">
+			<view v-if="rec.prizeType !== 'cash'" class="flow bl-card">
 				<view class="flow-h">
 					<view class="bl-sec-bar"></view>
 					<text class="flow-h-t">核销流程</text>
@@ -168,15 +170,15 @@
 					<text class="bl-kv-v">{{ fmt(rec.redeemAt, 'YYYY-MM-DD HH:mm:ss') }}</text>
 				</view>
 				<view class="bl-kv">
-					<text class="bl-kv-k">核销截止</text>
+					<text class="bl-kv-k">领取截止</text>
 					<text class="bl-kv-v">{{ fmt(rec.expireAt, 'YYYY-MM-DD HH:mm') }}</text>
 				</view>
 			</view>
 
 			<view class="svc" @tap="callService">
-				<bl-icon name="headphones" :size="34" color="#0E3B2E" :weight="1.8" />
+				<bl-icon name="headphones" :size="34" color="#102E53" :weight="1.8" />
 				<text class="svc-t">领奖遇到问题？联系客服 {{ cfg.service.phone }}</text>
-				<bl-icon name="chevron-right" :size="26" color="#B4BFB8" :weight="2" />
+				<bl-icon name="chevron-right" :size="26" color="#9AAEBF" :weight="2" />
 			</view>
 		</view>
 
@@ -186,7 +188,7 @@
 				<view class="pk-h">
 					<text class="pk-h-t">选择领取门店</text>
 					<view class="pk-h-x" @tap="showPick = false">
-						<bl-icon name="x" :size="32" color="#8B9A92" :weight="2" />
+						<bl-icon name="x" :size="32" color="#60768C" :weight="2" />
 					</view>
 				</view>
 				<scroll-view class="pk-list" scroll-y>
@@ -303,13 +305,14 @@
 					const latest = await store.refreshCustomerRecord(this.id)
 					this.id = latest.id
 					this.currentRecord = latest
+					if (latest.prizeType === 'cash') this.$refs.cashPanel?.refresh()
 					this.tick()
 					if (latest.status !== 'pending') this.stopStatusPolling()
 					if (previousStatus === 'pending' && latest.status === 'verified') {
 						if (typeof uni.vibrateShort === 'function') {
 							uni.vibrateShort({ fail: () => {} })
 						}
-						uni.showToast({ title: '核销成功，凭证已更新', icon: 'success' })
+						uni.showToast({ title: latest.prizeType === 'cash' ? '现金已到账' : '核销成功，凭证已更新', icon: 'success' })
 					} else if (manual) {
 						const statusText = { pending: '待核销', verified: '已核销', expired: '已失效', frozen: '已冻结' }[latest.status] || '已更新'
 						uni.showToast({ title: '当前状态：' + statusText, icon: 'none' })
@@ -347,6 +350,7 @@
 </script>
 
 <style lang="scss" scoped>
+.exchange-note{padding:24rpx 30rpx;background:$bl-gold-lt;color:$bl-gold;font-size:26rpx;line-height:1.8}
 	.pg {
 		min-height: 100vh;
 		background: $bl-paper;
@@ -372,7 +376,7 @@
 		top: 0;
 		right: 0;
 		bottom: 0;
-		background: linear-gradient(180deg, rgba(10, 43, 33, 0.88) 0%, rgba(14, 59, 46, 0.9) 55%, $bl-paper 100%);
+		background: linear-gradient(180deg, rgba(9, 31, 59, 0.88) 0%, rgba(16, 46, 83, 0.9) 55%, $bl-paper 100%);
 	}
 
 	/* ============ 凭证 ============ */
@@ -381,7 +385,7 @@
 		z-index: 3;
 		background: $bl-card;
 		border-radius: $bl-r-xl;
-		box-shadow: 0 20rpx 50rpx rgba(10, 43, 33, 0.22);
+		box-shadow: 0 20rpx 50rpx rgba(9, 31, 59, 0.22);
 		overflow: hidden;
 	}
 
@@ -507,7 +511,7 @@
 		min-height: 68rpx;
 		margin-top: 18rpx;
 		padding: 12rpx 18rpx;
-		border: 1rpx solid rgba(14, 59, 46, 0.16);
+		border: 1rpx solid rgba(16, 46, 83, 0.16);
 		border-radius: $bl-r-sm;
 		background: $bl-green-lt;
 		display: flex;
@@ -531,7 +535,7 @@
 		width: 100%;
 		height: 104rpx;
 		background: $bl-paper-2;
-		border: 1rpx dashed rgba(14, 59, 46, 0.28);
+		border: 1rpx dashed rgba(16, 46, 83, 0.28);
 		border-radius: $bl-r-md;
 		display: flex;
 		align-items: center;
@@ -622,10 +626,10 @@
 	}
 
 	.seal-verified {
-		border-color: rgba(44, 114, 86, 0.55);
+		border-color: rgba(67, 118, 171, 0.55);
 
 		.tk-seal-t {
-			color: rgba(44, 114, 86, 0.75);
+			color: rgba(67, 118, 171, 0.75);
 		}
 	}
 

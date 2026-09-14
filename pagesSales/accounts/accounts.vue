@@ -3,7 +3,7 @@
 		<bl-navbar title="门店账号" bg="paper" home="/pagesSales/stores/stores" />
 		<view class="bl-wrap body">
 			<view class="store-head"><text>{{ storeInfo.short || '门店账号' }}</text><text>{{ list.length }} 个账号</text></view>
-			<view class="scope"><bl-icon name="lock" :size="25" color="#2C7256" :weight="1.9" /><text>只能管理本人创建门店的账号，建议每店至少创建一个店主。</text></view>
+			<view class="scope"><bl-icon name="lock" :size="25" color="#4376AB" :weight="1.9" /><text>只能管理本人创建门店的账号，建议每店至少创建一个店主。</text></view>
 			<view v-for="item in list" :key="item.id" class="account bl-card">
 				<view class="avatar"><text>{{ (item.name || '店').slice(0,1) }}</text></view>
 				<view class="account-main"><view><text class="account-name">{{ item.name }}</text><text class="bl-tag" :class="item.role === 'owner' ? 'bl-tag-gold' : 'bl-tag-green'">{{ item.role === 'owner' ? '店主' : '店员' }}</text></view><text class="username">账号：{{ item.username }}</text><text class="phone">{{ item.phone || '未填写联系电话' }}</text></view>

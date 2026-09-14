@@ -6,7 +6,7 @@
 			<!-- 权限说明 -->
 			<view class="ro">
 				<view class="ro-ico">
-					<bl-icon name="eye" :size="34" color="#B8892B" :weight="1.8" />
+					<bl-icon name="eye" :size="34" color="#94692B" :weight="1.8" />
 				</view>
 				<view class="ro-txt">
 					<text class="ro-t">只读模式</text>
@@ -67,7 +67,7 @@
 			</view>
 
 			<view class="tail">
-				<bl-icon name="lock" :size="24" color="#B4BFB8" :weight="1.9" />
+				<bl-icon name="lock" :size="24" color="#9AAEBF" :weight="1.9" />
 				<text class="tail-t">如需调整奖品或库存，请联系总部运营</text>
 			</view>
 		</view>
@@ -104,7 +104,7 @@
 			},
 			poolColor(id) {
 				const p = store.poolById(id)
-				return p ? p.color : '#8B9A92'
+				return p ? p.color : '#60768C'
 			},
 			tagText(p) {
 				if (!p.on) return '已下架'
@@ -204,7 +204,7 @@
 			border-color: $bl-green;
 
 			text {
-				color: #FFF6E6;
+				color: #F5F9FD;
 				font-weight: 700;
 			}
 		}
@@ -333,7 +333,7 @@
 	.pz-fill {
 		height: 100%;
 		border-radius: 5rpx;
-		background: linear-gradient(90deg, #2C7256, #17553F);
+		background: linear-gradient(90deg, #4376AB, #244D7A);
 
 		&.low {
 			background: linear-gradient(90deg, #E0A030, $bl-gold);

@@ -27,7 +27,7 @@
 				</view>
 
 				<view class="tip">
-					<bl-icon name="lock" :size="24" color="#8B9A92" :weight="1.8" />
+					<bl-icon name="lock" :size="24" color="#60768C" :weight="1.8" />
 					<text class="tip-t">各门店数据完全隔离，店员账号无任何数据查看与设置权限</text>
 				</view>
 			</view>
@@ -103,7 +103,7 @@
 		top: 0;
 		right: 0;
 		bottom: 0;
-		background: linear-gradient(175deg, rgba(10, 43, 33, 0.93), rgba(6, 26, 20, 0.97));
+		background: linear-gradient(175deg, rgba(9, 31, 59, 0.93), rgba(6, 26, 20, 0.97));
 	}
 
 	.wrap {
@@ -123,14 +123,14 @@
 		width: 92rpx;
 		height: 92rpx;
 		border-radius: 16rpx;
-		background: linear-gradient(140deg, #C8402F, #A32A1D);
+		background: linear-gradient(140deg, #D6B16D, #A97834);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		box-shadow: 0 10rpx 26rpx rgba(0, 0, 0, 0.35);
 
 		text {
-			color: #FFF0DC;
+			color: #F5F9FD;
 			font-size: 48rpx;
 			font-weight: 800;
 		}
@@ -145,7 +145,7 @@
 		margin-top: 26rpx;
 		font-size: 46rpx;
 		font-weight: 800;
-		color: #FFF6E6;
+		color: #F5F9FD;
 		letter-spacing: 4rpx;
 	}
 

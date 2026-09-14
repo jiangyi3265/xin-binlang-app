@@ -60,6 +60,7 @@
 				</view>
 			</view>
 
+			<view v-if="rec && rec.prizeType === 'exchange' && canVerify" class="exchange-confirm bl-card"><text>应收换购金额：¥{{ rec.exchangeAmount }}</text><text>交付：{{ rec.prizeName }} 1 袋（价值 ¥{{ rec.prizeValue }}）</text><label @tap="exchangePaid = !exchangePaid"><checkbox :checked="exchangePaid" color="#102E53" />已当面收取补款，并向顾客交付商品</label></view>
 			<!-- ============ 核销留痕 ============ -->
 			<view v-if="done || (rec && rec.status === 'verified')" class="tr bl-card">
 				<view class="tr-h">
@@ -87,7 +88,7 @@
 
 			<!-- ============ 待核销时的提示 ============ -->
 			<view v-if="canVerify" class="warn-box">
-				<bl-icon name="alert-circle" :size="28" color="#B8892B" :weight="1.8" />
+				<bl-icon name="alert-circle" :size="28" color="#94692B" :weight="1.8" />
 				<text class="warn-t">请当面将奖品交付顾客后再点击核销，核销后凭证立即失效且不可撤销。</text>
 			</view>
 		</view>
@@ -132,7 +133,7 @@
 
 	export default {
 		data() {
-			return { code: '', res: {}, done: false }
+			return { code: '', res: {}, done: false, exchangePaid: false, verifying: false }
 		},
 		computed: {
 			rec() { return this.res.record || null },
@@ -152,8 +153,8 @@
 				return (ERR[this.res.code] || ERR.ERR_NOT_FOUND).i
 			},
 			hdColor() {
-				if (this.done) return '#2C7256'
-				return this.res.ok ? '#B8892B' : '#C0392B'
+				if (this.done) return '#4376AB'
+				return this.res.ok ? '#94692B' : '#C0392B'
 			},
 			hdTitle() {
 				if (this.done) return '核销成功'
@@ -174,15 +175,18 @@
 			fmt,
 			daysLeft,
 			doVerify() {
-				const a = store.account()
+				if (this.verifying) return
+				if (this.rec.prizeType === 'exchange' && !this.exchangePaid) { uni.showToast({ title: '请先确认收取换购补款并交付商品', icon: 'none' }); return }
 				uni.showModal({
 					title: '确认核销',
-					content: '确认将「' + this.rec.prizeName + '」交付给顾客 ' + this.rec.userNick + '？',
+					content: (this.rec.prizeType === 'exchange' ? '已收取 ¥' + this.rec.exchangeAmount + ' 换购款。' : '') + '确认已将「' + this.rec.prizeName + '」交付给顾客 ' + this.rec.userNick + '？',
 					confirmText: '确认核销',
-					confirmColor: '#0E3B2E',
+					confirmColor: '#102E53',
 					success: async m => {
 						if (!m.confirm) return
-						const r = await store.verify(this.code)
+						this.verifying = true
+						const r = await store.verify(this.code, this.exchangePaid)
+						this.verifying = false
 						if (r.ok) {
 							this.res = r
 							this.done = true
@@ -203,6 +207,7 @@
 </script>
 
 <style lang="scss" scoped>
+.exchange-confirm{display:flex;flex-direction:column;gap:20rpx;padding:28rpx;margin-top:24rpx;font-size:26rpx;color:$bl-ink;line-height:1.7}.exchange-confirm>text:first-child{font-weight:800;color:$bl-gold;font-size:34rpx}.exchange-confirm label{display:flex;align-items:center;gap:14rpx;min-height:88rpx;font-size:24rpx}
 	.pg {
 		min-height: 100vh;
 	}
@@ -223,7 +228,7 @@
 
 		&.ok {
 			background: $bl-green-lt;
-			border-color: rgba(44, 114, 86, 0.28);
+			border-color: rgba(67, 118, 171, 0.28);
 		}
 
 		&.no {
@@ -395,7 +400,7 @@
 		padding: 18rpx $bl-pad;
 		background: rgba(255, 255, 255, 0.97);
 		border-top: 1rpx solid $bl-line-2;
-		box-shadow: 0 -6rpx 24rpx rgba(22, 38, 31, 0.05);
+		box-shadow: 0 -6rpx 24rpx rgba(23, 45, 69, 0.05);
 		padding-bottom: calc(18rpx + constant(safe-area-inset-bottom));
 		padding-bottom: calc(18rpx + env(safe-area-inset-bottom));
 	}

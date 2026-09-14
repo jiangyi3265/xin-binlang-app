@@ -18,13 +18,13 @@
 					</view>
 					<view class="brand-r">
 						<view class="ico-btn" @tap="go('/pages/notice/notice')">
-							<bl-icon name="bell" :size="38" color="#FFF3DA" :weight="1.7" />
+							<bl-icon name="bell" :size="38" color="#EDF4FC" :weight="1.7" />
 							<view v-if="logged && unread" class="badge"><text>{{ unread }}</text></view>
 						</view>
 						<image v-if="logged && user.avatar" class="avatar" :src="user.avatar" mode="aspectFill"
 							@tap="go('/pages/user/user')" />
 						<view v-else class="avatar avatar-guest" @tap="go('/pages/user/user')">
-							<bl-icon name="user" :size="34" color="#F0D79A" :weight="1.7" />
+							<bl-icon name="user" :size="34" color="#E5C58A" :weight="1.7" />
 						</view>
 					</view>
 				</view>
@@ -33,8 +33,8 @@
 				<view class="hero-t">
 					<view class="hero-t1">{{ cfg.actName }}</view>
 					<view class="hero-t2">{{ cfg.actSub }}</view>
-					<view class="hero-chip">
-						<bl-icon name="calendar" :size="24" color="#F0D79A" :weight="1.8" />
+					<view v-if="cfg.actStart && cfg.actEnd" class="hero-chip">
+						<bl-icon name="calendar" :size="24" color="#E5C58A" :weight="1.8" />
 						<text class="hero-chip-t">活动期 {{ cfg.actStart }} 至 {{ cfg.actEnd }}</text>
 					</view>
 				</view>
@@ -60,7 +60,7 @@
 					<text class="entry-btn-t">立即兑奖</text>
 				</view>
 				<view class="entry-tip">
-					<bl-icon name="info" :size="24" color="#8B9A92" :weight="1.8" />
+					<bl-icon name="info" :size="24" color="#60768C" :weight="1.8" />
 					<text v-if="unlimited" class="entry-tip-t">今日兑奖不限次数</text>
 					<text v-else class="entry-tip-t">今日还可兑奖
 						<text class="entry-num">{{ left }}</text> 次 · 每日上限 {{ cfg.dailyLimit }} 次
@@ -69,8 +69,8 @@
 			</view>
 
 			<!-- 滚动播报 -->
-			<view class="marquee">
-				<bl-icon name="megaphone" :size="30" color="#B8892B" :weight="1.8" />
+			<view v-if="cfg.marquee.length" class="marquee">
+				<bl-icon name="megaphone" :size="30" color="#94692B" :weight="1.8" />
 				<view class="marquee-box">
 					<view class="marquee-in" :style="'animation-duration:' + (cfg.marquee.length * 5) + 's'">
 						<text v-for="(m, i) in cfg.marquee" :key="i" class="marquee-t">{{ m }}　·　</text>
@@ -83,7 +83,7 @@
 			<!-- 未登录只放一条邀请，不拦页、不弹窗：用户可以一直逆着看完整个首页 -->
 			<view v-if="!logged" class="guest bl-card" @tap="login">
 				<view class="guest-ico">
-					<bl-icon name="ticket" :size="38" color="#B8892B" :weight="1.8" />
+					<bl-icon name="ticket" :size="38" color="#94692B" :weight="1.8" />
 				</view>
 				<view class="guest-txt">
 					<text class="guest-t">登录后同步我的奖品</text>
@@ -123,7 +123,7 @@
 				<view v-for="(s, i) in cfg.steps" :key="i" class="flow-i">
 					<view class="flow-l">
 						<view class="flow-dot">
-							<bl-icon :name="s.icon" :size="36" color="#0E3B2E" :weight="1.8" />
+							<bl-icon :name="s.icon" :size="36" color="#102E53" :weight="1.8" />
 						</view>
 						<view v-if="i < cfg.steps.length - 1" class="flow-line"></view>
 					</view>
@@ -146,7 +146,7 @@
 				</view>
 				<view class="bl-sec-more" @tap="go('/pages/rules/rules')">
 					<text>奖池规则</text>
-					<bl-icon name="chevron-right" :size="24" color="#8B9A92" :weight="2" />
+					<bl-icon name="chevron-right" :size="24" color="#60768C" :weight="2" />
 				</view>
 			</view>
 			<scroll-view class="prz" scroll-x show-scrollbar="false">
@@ -176,7 +176,7 @@
 				</view>
 				<view class="bl-sec-more" @tap="go('/pages/store/list')">
 					<text>全部 {{ stores.length }} 家</text>
-					<bl-icon name="chevron-right" :size="24" color="#8B9A92" :weight="2" />
+					<bl-icon name="chevron-right" :size="24" color="#60768C" :weight="2" />
 				</view>
 			</view>
 			<view class="st-list">
@@ -185,7 +185,7 @@
 					<view class="st-txt">
 						<text class="st-n bl-ellipsis">{{ s.short }}</text>
 						<view class="st-r">
-							<bl-icon name="map-pin" :size="22" color="#8B9A92" :weight="1.8" />
+							<bl-icon name="map-pin" :size="22" color="#60768C" :weight="1.8" />
 							<text class="st-a bl-ellipsis">{{ s.addr }}</text>
 						</view>
 						<view class="st-r">
@@ -206,15 +206,15 @@
 			</view>
 			<view class="about bl-card">
 				<view class="about-imgs">
-					<view v-for="(item, i) in productLine" :key="i" class="about-product">
-						<image class="about-img" :src="item.img" mode="aspectFit" />
+					<view v-for="(item, i) in productLine" :key="i" :class="['about-product', 'about-product-' + item.tone]">
+						<image class="about-img" :src="item.img" mode="aspectFit" lazy-load />
 						<text class="about-price">{{ item.price }}</text>
-						<text class="about-weight">净含量 {{ item.weight }}</text>
+						<text class="about-weight">{{ item.label }}</text>
 					</view>
 				</view>
 				<view class="about-txt">
-					<text class="about-t">三档正式包装 · 一袋一码</text>
-					<text class="about-d">30 元墨绿装、50 元黑色装、100 元白色装。购买带有活动标识的产品，找到袋内 6 位数字兑换码，微信登录后即可兑奖。</text>
+					<text class="about-t">倌榔双款包装 · 一袋一码</text>
+					<text class="about-d">30 元棕金装、50 元深蓝装。购买带有活动标识的倌榔产品，找到袋内 6 位数字兑换码，微信登录后即可兑奖。</text>
 				</view>
 			</view>
 
@@ -222,26 +222,26 @@
 			<view class="ent-store" @tap="go('/pagesStore/login/login')">
 				<view class="ent-store-l">
 					<view class="ent-store-ico">
-						<bl-icon name="store" :size="38" color="#B8892B" :weight="1.8" />
+						<bl-icon name="store" :size="38" color="#94692B" :weight="1.8" />
 					</view>
 					<view>
 						<view class="ent-store-t">门店端 · 核销工作台</view>
 						<view class="ent-store-d">店主 / 店员登录，扫码核销与数据看板</view>
 					</view>
 				</view>
-				<bl-icon name="chevron-right" :size="30" color="#B4BFB8" :weight="2" />
+				<bl-icon name="chevron-right" :size="30" color="#9AAEBF" :weight="2" />
 			</view>
 			<view class="ent-store ent-sales" @tap="go('/pagesSales/login/login')">
 				<view class="ent-store-l">
 					<view class="ent-store-ico ent-sales-ico">
-						<bl-icon name="users" :size="38" color="#0E3B2E" :weight="1.8" />
+						<bl-icon name="users" :size="38" color="#102E53" :weight="1.8" />
 					</view>
 					<view>
 						<view class="ent-store-t ent-sales-t">公司销售 · 门店拓展</view>
 						<view class="ent-store-d ent-sales-d">销售账号登录，仅查看本人创建的门店</view>
 					</view>
 				</view>
-				<bl-icon name="chevron-right" :size="30" color="#8B9A92" :weight="2" />
+				<bl-icon name="chevron-right" :size="30" color="#60768C" :weight="2" />
 			</view>
 
 			<view class="foot">
@@ -289,13 +289,8 @@
 			cfg() { return store.state.config },
 			logged() { return store.isCustomerAuthenticated() },
 			productLine() {
-				const prices = ['30 元', '50 元', '100 元']
-				const weights = ['38g', '48g', '58g']
-				return (this.cfg.sceneImgs || []).slice(0, 3).map((img, index) => ({
-					img,
-					price: prices[index],
-					weight: weights[index]
-				}))
+				const variants = [{ price: '30 元', label: '棕金装', tone: 'gold' }, { price: '50 元', label: '深蓝装', tone: 'blue' }]
+				return (this.cfg.sceneImgs || []).slice(0, 2).map((img, index) => ({ img, ...variants[index] }))
 			},
 			user() { return store.state.user },
 			stores() { return store.STORES },
@@ -341,7 +336,7 @@
 			},
 			poolColor(id) {
 				const p = store.poolById(id)
-				return p ? p.color : '#8B9A92'
+				return p ? p.color : '#60768C'
 			}
 		}
 	}
@@ -375,9 +370,9 @@
 		right: 0;
 		bottom: 0;
 		background: linear-gradient(170deg,
-			rgba(10, 43, 33, 0.86) 0%,
-			rgba(14, 59, 46, 0.72) 42%,
-			rgba(14, 59, 46, 0.94) 100%);
+			rgba(9, 31, 59, 0.32) 0%,
+			rgba(16, 46, 83, 0.18) 42%,
+			rgba(9, 31, 59, 0.72) 100%);
 	}
 
 	.hero-in {
@@ -402,7 +397,8 @@
 		width: 64rpx;
 		height: 64rpx;
 		border-radius: 10rpx;
-		background: linear-gradient(140deg, #C8402F, #A32A1D);
+		background: rgba(9, 31, 59, 0.45);
+		border: 1rpx solid #E5C58A;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -410,7 +406,7 @@
 		box-shadow: 0 6rpx 18rpx rgba(0, 0, 0, 0.25);
 
 		text {
-			color: #FFF0DC;
+			color: #F5F9FD;
 			font-size: 34rpx;
 			font-weight: 800;
 		}
@@ -422,7 +418,7 @@
 	}
 
 	.brand-n {
-		color: #FFF6E6;
+		color: #F5F9FD;
 		font-size: 32rpx;
 		font-weight: 800;
 		letter-spacing: 3rpx;
@@ -461,7 +457,7 @@
 		padding: 0 6rpx;
 		border-radius: 15rpx;
 		background: $bl-red;
-		border: 2rpx solid rgba(14, 59, 46, 0.9);
+		border: 2rpx solid rgba(16, 46, 83, 0.9);
 
 		text {
 			color: #fff;
@@ -492,7 +488,7 @@
 	.hero-t1 {
 		font-size: 76rpx;
 		font-weight: 800;
-		color: #FFF6E6;
+		color: #F5F9FD;
 		letter-spacing: 8rpx;
 		line-height: 1.1;
 		text-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.3);
@@ -531,7 +527,7 @@
 		background: $bl-card;
 		border-radius: $bl-r-xl;
 		padding: 28rpx;
-		box-shadow: 0 20rpx 48rpx rgba(14, 59, 46, 0.14);
+		box-shadow: 0 20rpx 48rpx rgba(16, 46, 83, 0.14);
 		border: 1rpx solid rgba(240, 215, 154, 0.5);
 	}
 
@@ -544,7 +540,7 @@
 		height: 148rpx;
 		border-radius: $bl-r-md;
 		flex-shrink: 0;
-		background: #F4F2EC;
+		background: #F0F4F8;
 	}
 
 	.entry-txt {
@@ -690,7 +686,7 @@
 		padding: 0 30rpx;
 		border-radius: 30rpx;
 		background: $bl-green;
-		color: #FFF8E8;
+		color: #F5F9FD;
 		font-size: 25rpx;
 		font-weight: 700;
 		letter-spacing: 2rpx;
@@ -755,7 +751,7 @@
 		height: 68rpx;
 		border-radius: 50%;
 		background: $bl-green-lt;
-		border: 1rpx solid rgba(44, 114, 86, 0.18);
+		border: 1rpx solid rgba(67, 118, 171, 0.18);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -765,7 +761,7 @@
 	.flow-line {
 		flex: 1;
 		width: 2rpx;
-		background: linear-gradient(180deg, rgba(44, 114, 86, 0.25), rgba(44, 114, 86, 0.06));
+		background: linear-gradient(180deg, rgba(67, 118, 171, 0.25), rgba(67, 118, 171, 0.06));
 		margin: 6rpx 0;
 	}
 
@@ -946,13 +942,17 @@
 		min-width: 0;
 		padding: 10rpx 8rpx 14rpx;
 		border-radius: 16rpx;
-		background: #F6F4EE;
+		background: #F5F8FC;
 		text-align: center;
 	}
 
+	.about-product-gold { border: 1rpx solid #E5D6BE; background: #FAF6EF; }
+	.about-product-blue { border: 1rpx solid #CCDDED; background: #F2F7FC; }
+	.about-product-gold .about-price { color: #765126; }
+	.about-product-blue .about-price { color: #244D7A; }
 	.about-img {
 		width: 100%;
-		height: 210rpx;
+		height: 330rpx;
 		display: block;
 	}
 
@@ -998,7 +998,7 @@
 		margin-top: 32rpx;
 		padding: 24rpx 26rpx;
 		border-radius: $bl-r-lg;
-		background: linear-gradient(120deg, #14332A 0%, #0B241C 100%);
+		background: linear-gradient(120deg, #14385E 0%, #0B2445 100%);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -1016,8 +1016,8 @@
 		border-color: rgba(184, 137, 43, 0.22);
 	}
 
-	.ent-sales-t { color: $bl-ink; }
-	.ent-sales-d { color: $bl-ink-3; }
+	.ent-sales .ent-sales-t { color: $bl-ink; }
+	.ent-sales .ent-sales-d { color: $bl-ink-3; }
 
 	.ent-store-l {
 		display: flex;
@@ -1039,7 +1039,7 @@
 	.ent-store-t {
 		font-size: 28rpx;
 		font-weight: 700;
-		color: #FFF3DA;
+		color: #EDF4FC;
 	}
 
 	.ent-store-d {
@@ -1057,14 +1057,14 @@
 
 	.foot-t {
 		font-size: 22rpx;
-		color: $bl-ink-4;
+		color: $bl-ink-3;
 		letter-spacing: 1rpx;
 	}
 
 	.foot-d {
 		margin-top: 6rpx;
 		font-size: 20rpx;
-		color: #C3CCC6;
+		color: $bl-ink-3;
 	}
 
 	/* ============ 公告弹窗 ============ */
@@ -1098,7 +1098,7 @@
 		top: 0;
 		right: 0;
 		bottom: 0;
-		background: linear-gradient(180deg, rgba(10, 43, 33, 0.35), rgba(10, 43, 33, 0.9));
+		background: linear-gradient(180deg, rgba(9, 31, 59, 0.35), rgba(9, 31, 59, 0.9));
 	}
 
 	.nt-badge {
@@ -1113,7 +1113,7 @@
 		align-items: center;
 
 		text {
-			color: #FFF0DC;
+			color: #F5F9FD;
 			font-size: 20rpx;
 			font-weight: 700;
 			letter-spacing: 2rpx;
@@ -1125,7 +1125,7 @@
 		z-index: 2;
 		font-size: 38rpx;
 		font-weight: 800;
-		color: #FFF6E6;
+		color: #F5F9FD;
 		letter-spacing: 2rpx;
 	}
 

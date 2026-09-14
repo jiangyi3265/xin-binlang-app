@@ -53,7 +53,7 @@
 			name: { type: String, required: true },
 			/* 尺寸：数字按 rpx 处理，字符串原样使用 */
 			size: { type: [Number, String], default: 36 },
-			color: { type: String, default: '#16261F' },
+			color: { type: String, default: '#172D45' },
 			/* 线宽（24 网格下的 stroke-width） */
 			weight: { type: [Number, String], default: 1.8 },
 			/* 实心 */

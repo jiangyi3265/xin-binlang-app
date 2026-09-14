@@ -46,6 +46,8 @@ const state = reactive({
 	config: {
 		...clone(CONFIG),
 		brandLogo: publicAsset(CONFIG.brandLogo),
+		homeBg: publicAsset(CONFIG.homeBg),
+		ruleBg: publicAsset(CONFIG.ruleBg),
 		productImg: publicAsset(CONFIG.productImg),
 		sceneImgs: CONFIG.sceneImgs.map(publicAsset)
 	},
@@ -225,7 +227,7 @@ const store = {
 
 	applyPools(pools) {
 		if (!Array.isArray(pools)) return
-		const colors = ['#B8892B', '#2C7256', '#2F6D8C']
+		const colors = ['#94692B', '#4376AB', '#2F6D8C']
 		const rows = pools.map((pool, index) => ({ ...pool, tag: pool.tier, color: colors[index % colors.length] }))
 		POOLS.splice(0, POOLS.length, ...rows)
 	},
@@ -400,13 +402,13 @@ const store = {
 		return true
 	},
 
-	async redeem(input) {
+	async redeem(input, selectedCard) {
 		if (!this.isCustomerAuthenticated()) return { ok: false, code: 'ERR_AUTH_REQUIRED', msg: '请先登录后再兑换' }
 		const code = String(input || '').toUpperCase().trim()
 		try {
-			const result = await request('/customer/redeem', { method: 'POST', data: { code, preferredStoreId: STORES[0] && STORES[0].id } }, state.customerToken)
+			const result = await request('/customer/draw', { method: 'POST', data: { code, selectedCard, preferredStoreId: STORES[0] && STORES[0].id } }, state.customerToken)
 			result.record = this.mapRecord(result.record)
-			state.records.unshift(result.record)
+			state.records = [result.record, ...state.records.filter(item => item.id !== result.record.id)]
 			this.syncCustomer().catch(() => {})
 			return result
 		} catch (error) {
@@ -472,14 +474,14 @@ const store = {
 		}
 	},
 
-	async verify(input) {
+	async verify(input, exchangePaid = false) {
 		if (!this.isStoreAuthenticated()) return { ok: false, code: 'ERR_AUTH_REQUIRED', msg: '请先登录门店账号' }
 		const code = String(input || '').toUpperCase().trim()
 		const currentStore = this.myStore()
 		try {
 			const result = await request('/store/orders/' + code + '/verify', {
 				method: 'POST',
-				data: { position: currentStore ? currentStore.addr + '（门店定位）' : '总部核销工作台' }
+				data: { exchangePaid, position: currentStore ? currentStore.addr + '（门店定位）' : '总部核销工作台' }
 			}, state.storeToken)
 			result.record = this.mapRecord(result.record)
 			const index = state.records.findIndex(item => item.id === result.record.id)

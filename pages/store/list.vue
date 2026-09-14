@@ -4,7 +4,7 @@
 
 		<view class="bl-wrap">
 			<view class="search">
-				<bl-icon name="search" :size="32" color="#8B9A92" :weight="1.9" />
+				<bl-icon name="search" :size="32" color="#60768C" :weight="1.9" />
 				<input class="search-in" v-model="kw" placeholder="搜索门店名称或地址"
 					placeholder-class="search-ph" confirm-type="search" />
 				<view v-if="kw" class="search-x" @tap="kw = ''">
@@ -13,7 +13,7 @@
 			</view>
 
 			<view class="hint">
-				<bl-icon name="shield-check" :size="26" color="#2C7256" :weight="1.8" />
+				<bl-icon name="shield-check" :size="26" color="#4376AB" :weight="1.8" />
 				<text class="hint-t">中奖凭证在下列任意门店均可核销，共 {{ stores.length }} 家</text>
 			</view>
 
@@ -30,11 +30,11 @@
 						<text class="st-d bl-num">{{ s.distance }} km</text>
 					</view>
 					<view class="st-r">
-						<bl-icon name="map-pin" :size="24" color="#8B9A92" :weight="1.8" />
+						<bl-icon name="map-pin" :size="24" color="#60768C" :weight="1.8" />
 						<text class="st-a">{{ s.addr }}</text>
 					</view>
 					<view class="st-r">
-						<bl-icon name="clock" :size="24" color="#8B9A92" :weight="1.8" />
+						<bl-icon name="clock" :size="24" color="#60768C" :weight="1.8" />
 						<text class="st-a">营业时间 {{ s.open }}</text>
 					</view>
 					<view class="st-tags">
@@ -43,11 +43,11 @@
 					</view>
 					<view class="st-btns">
 						<view class="st-btn" @tap="call(s)">
-							<bl-icon name="phone" :size="28" color="#0E3B2E" :weight="1.8" />
+							<bl-icon name="phone" :size="28" color="#102E53" :weight="1.8" />
 							<text class="st-btn-t">拨打电话</text>
 						</view>
 						<view class="st-btn" @tap="nav(s)">
-							<bl-icon name="navigation" :size="28" color="#0E3B2E" :weight="1.8" />
+							<bl-icon name="navigation" :size="28" color="#102E53" :weight="1.8" />
 							<text class="st-btn-t">导航前往</text>
 						</view>
 					</view>
@@ -152,12 +152,12 @@
 		height: 40rpx;
 		padding: 0 18rpx 0 16rpx;
 		border-radius: 0 20rpx 20rpx 0;
-		background: linear-gradient(135deg, #C8402F, #A32A1D);
+		background: linear-gradient(135deg, #D6B16D, #A97834);
 		display: flex;
 		align-items: center;
 
 		text {
-			color: #FFF0DC;
+			color: #F5F9FD;
 			font-size: 20rpx;
 			font-weight: 700;
 			letter-spacing: 2rpx;

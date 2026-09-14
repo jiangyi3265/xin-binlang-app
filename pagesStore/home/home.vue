@@ -10,7 +10,7 @@
 				</template>
 				<template #right>
 					<view class="nav-r" @tap="go('/pagesStore/me/me')">
-						<bl-icon name="user" :size="36" color="#FFF6E6" :weight="1.8" />
+						<bl-icon name="user" :size="36" color="#F5F9FD" :weight="1.8" />
 					</view>
 				</template>
 			</bl-navbar>
@@ -57,11 +57,11 @@
 				</view>
 				<view class="act-side">
 					<view class="act-s" @tap="go('/pagesStore/input/input')">
-						<bl-icon name="keyboard" :size="42" color="#B8892B" :weight="1.7" />
+						<bl-icon name="keyboard" :size="42" color="#94692B" :weight="1.7" />
 						<text class="act-s-t">输码核销</text>
 					</view>
 					<view class="act-s" @tap="go('/pagesStore/orders/orders')">
-						<bl-icon name="clipboard-list" :size="42" color="#2C7256" :weight="1.7" />
+						<bl-icon name="clipboard-list" :size="42" color="#4376AB" :weight="1.7" />
 						<text class="act-s-t">核销订单</text>
 						<view v-if="st.pending" class="act-s-dot"><text>{{ st.pending }}</text></view>
 					</view>
@@ -75,18 +75,18 @@
 					<text class="bl-sec-t">常用功能</text>
 				</view>
 				<view v-if="!canView" class="bl-sec-more">
-					<bl-icon name="lock" :size="22" color="#8B9A92" :weight="1.9" />
+					<bl-icon name="lock" :size="22" color="#60768C" :weight="1.9" />
 					<text style="margin-left:6rpx">店员权限受限</text>
 				</view>
 			</view>
 			<view class="grid bl-card">
 				<view v-for="g in grids" :key="g.k" class="grid-i" @tap="onGrid(g)">
 					<view class="grid-ico" :style="'background:' + g.bg">
-						<bl-icon :name="g.icon" :size="40" :color="g.locked ? '#B4BFB8' : g.color" :weight="1.75" />
+						<bl-icon :name="g.icon" :size="40" :color="g.locked ? '#9AAEBF' : g.color" :weight="1.75" />
 					</view>
 					<text class="grid-t" :class="{ off: g.locked }">{{ g.t }}</text>
 					<view v-if="g.locked" class="grid-lock">
-						<bl-icon name="lock" :size="18" color="#B4BFB8" :weight="2" />
+						<bl-icon name="lock" :size="18" color="#9AAEBF" :weight="2" />
 					</view>
 				</view>
 			</view>
@@ -100,7 +100,7 @@
 				</view>
 				<view class="bl-sec-more" @tap="go('/pagesStore/orders/orders')">
 					<text>全部</text>
-					<bl-icon name="chevron-right" :size="24" color="#8B9A92" :weight="2" />
+					<bl-icon name="chevron-right" :size="24" color="#60768C" :weight="2" />
 				</view>
 			</view>
 
@@ -160,13 +160,13 @@
 			grids() {
 				const lock = !this.canView
 				return [
-					{ k: 'orders', t: '核销订单', icon: 'clipboard-list', color: '#2C7256', bg: '#E7EFEA', url: '/pagesStore/orders/orders', locked: lock },
+					{ k: 'orders', t: '核销订单', icon: 'clipboard-list', color: '#4376AB', bg: '#E6EFF8', url: '/pagesStore/orders/orders', locked: lock },
 					{ k: 'stats', t: '门店数据', icon: 'bar-chart', color: '#2F6D8C', bg: '#EAF2F6', url: '/pagesStore/stats/stats', locked: lock },
-					{ k: 'logs', t: '核销日志', icon: 'history', color: '#B8892B', bg: '#FAF1DC', url: '/pagesStore/logs/logs', locked: lock },
+					{ k: 'logs', t: '核销日志', icon: 'history', color: '#94692B', bg: '#F6EEDC', url: '/pagesStore/logs/logs', locked: lock },
 					{ k: 'prize', t: '奖品库', icon: 'gift', color: '#C0392B', bg: '#FCEDEA', url: '/pagesStore/prize/prize', locked: false },
-					{ k: 'staff', t: '员工管理', icon: 'users', color: '#4A5C52', bg: '#F0EFEA', url: '/pagesStore/staff/staff', locked: this.acc.role === 'staff' },
-					{ k: 'export', t: '导出报表', icon: 'file-spreadsheet', color: '#2C7256', bg: '#E7EFEA', url: '', locked: lock },
-					{ k: 'rule', t: '活动规则', icon: 'scroll-text', color: '#B8892B', bg: '#FAF1DC', url: '/pages/rules/rules', tab: true, locked: false },
+					{ k: 'staff', t: '员工管理', icon: 'users', color: '#4F657D', bg: '#F0EFEA', url: '/pagesStore/staff/staff', locked: this.acc.role === 'staff' },
+					{ k: 'export', t: '导出报表', icon: 'file-spreadsheet', color: '#4376AB', bg: '#E6EFF8', url: '', locked: lock },
+					{ k: 'rule', t: '活动规则', icon: 'scroll-text', color: '#94692B', bg: '#F6EEDC', url: '/pages/rules/rules', tab: true, locked: false },
 					{ k: 'me', t: '门店中心', icon: 'store', color: '#2F6D8C', bg: '#EAF2F6', url: '/pagesStore/me/me', locked: false }
 				]
 			}
@@ -218,7 +218,7 @@
 	}
 
 	.nav-t {
-		color: #FFF6E6;
+		color: #F5F9FD;
 		font-size: 34rpx;
 		font-weight: 700;
 	}
@@ -254,7 +254,7 @@
 		top: 0;
 		right: 0;
 		bottom: 0;
-		background: linear-gradient(175deg, rgba(10, 43, 33, 0.92), rgba(14, 59, 46, 0.95));
+		background: linear-gradient(175deg, rgba(9, 31, 59, 0.92), rgba(16, 46, 83, 0.95));
 	}
 
 	.top-in {
@@ -289,7 +289,7 @@
 	.who-n {
 		font-size: 34rpx;
 		font-weight: 800;
-		color: #FFF6E6;
+		color: #F5F9FD;
 		margin-right: 12rpx;
 	}
 
@@ -315,7 +315,7 @@
 
 	.today-n {
 		font-size: 52rpx;
-		color: #F0D79A;
+		color: #E5C58A;
 	}
 
 	.today-l {
@@ -341,7 +341,7 @@
 	.act-main {
 		width: 380rpx;
 		border-radius: $bl-r-xl;
-		background: linear-gradient(140deg, #17553F 0%, #0B2A20 100%);
+		background: linear-gradient(140deg, #244D7A 0%, #0B2A20 100%);
 		padding: 34rpx 28rpx;
 		box-shadow: 0 18rpx 44rpx rgba(11, 42, 32, 0.35);
 		display: flex;
@@ -364,7 +364,7 @@
 		margin-top: 22rpx;
 		font-size: 38rpx;
 		font-weight: 800;
-		color: #FFF6E6;
+		color: #F5F9FD;
 		letter-spacing: 2rpx;
 	}
 

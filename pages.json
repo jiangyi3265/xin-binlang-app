@@ -10,7 +10,7 @@
 			"path": "pages/index/index",
 			"style": {
 				"navigationStyle": "custom",
-				"navigationBarTitleText": "金榔记 · 开码有奖",
+				"navigationBarTitleText": "倌榔 · 开码有奖",
 				"enablePullDownRefresh": false
 			}
 		},
@@ -205,8 +205,8 @@
 		}
 	},
 	"tabBar": {
-		"color": "#94A39A",
-		"selectedColor": "#0E3B2E",
+		"color": "#7890A7",
+		"selectedColor": "#102E53",
 		"backgroundColor": "#FFFFFF",
 		"borderStyle": "white",
 		"list": [
@@ -232,11 +232,11 @@
 	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "金榔记 · 开码有奖",
-		"navigationBarBackgroundColor": "#F5F1E8",
-		"backgroundColor": "#F5F1E8",
-		"backgroundColorTop": "#F5F1E8",
-		"backgroundColorBottom": "#F5F1E8"
+		"navigationBarTitleText": "倌榔 · 开码有奖",
+		"navigationBarBackgroundColor": "#F0F4F8",
+		"backgroundColor": "#F0F4F8",
+		"backgroundColorTop": "#F0F4F8",
+		"backgroundColorBottom": "#F0F4F8"
 	},
 	"uniIdRouter": {}
 }

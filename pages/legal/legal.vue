@@ -23,7 +23,7 @@
 			</view>
 
 			<view class="legal-foot">
-				<bl-icon name="shield-check" :size="30" color="#2C7256" :weight="2" />
+				<bl-icon name="shield-check" :size="30" color="#4376AB" :weight="2" />
 				<text>我们会持续按照最小必要原则保护你的账户与兑奖数据。</text>
 			</view>
 		</view>
@@ -34,7 +34,7 @@
 	const DOCUMENTS = {
 		agreement: {
 			title: '用户服务协议',
-			intro: '本协议用于说明你使用金榔记一码兑奖服务时的权利、责任与基本规则。',
+			intro: '本协议用于说明你使用倌榔一码兑奖服务时的权利、责任与基本规则。',
 			sections: [
 				{ title: '服务内容', text: '平台为消费者提供兑换码验证、抽奖结果展示、兑奖记录、奖品状态、意向门店选择和到店核销等服务。具体活动以页面公示规则为准。' },
 				{ title: '账户与登录', text: '你可以使用微信身份快捷登录。请妥善保管微信账户及设备；通过该账户完成的操作将记录在对应兑奖账户中。' },
@@ -46,7 +46,7 @@
 		},
 		privacy: {
 			title: '隐私政策',
-			intro: '本政策说明金榔记一码兑奖服务如何处理与你有关的信息。',
+			intro: '本政策说明倌榔一码兑奖服务如何处理与你有关的信息。',
 			sections: [
 				{ title: '我们收集的信息', items: ['微信提供的账户标识，用于识别你的兑奖账户。', '兑换码、抽奖结果、奖品、优惠券、意向门店和核销记录。', '请求时间、网络地址与必要的安全日志，用于防作弊和故障排查。', '手机号不会自动获取，只有在你另行主动授权后才会处理。'] },
 				{ title: '信息使用目的', text: '我们仅将信息用于完成登录、兑奖、领奖核销、记录查询、服务通知、风险控制以及保障系统稳定运行。' },
@@ -164,7 +164,7 @@
 	.legal-foot {
 		margin-top: 34rpx;
 		padding: 24rpx;
-		border: 1rpx solid rgba(44, 114, 86, 0.18);
+		border: 1rpx solid rgba(67, 118, 171, 0.18);
 		border-radius: $bl-r-md;
 		background: $bl-green-lt;
 		display: flex;

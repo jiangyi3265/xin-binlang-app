@@ -18,8 +18,8 @@ ICONS_JS = os.path.join(ROOT, "components", "bl-icon", "icons.js")
 OUT_DIR = os.path.join(ROOT, "static", "tabbar")
 CHROME = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
 
-INACTIVE = "#94A39A"
-ACTIVE = "#0E3B2E"
+INACTIVE = "#7890A7"
+ACTIVE = "#102E53"
 
 # (图标名, 输出文件前缀)
 TABS = [

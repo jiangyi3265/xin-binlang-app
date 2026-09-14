@@ -15,7 +15,7 @@
 					</view>
 					<view class="skip" @tap="skip">
 						<text class="skip-t">先逛逛</text>
-						<bl-icon name="chevron-right" :size="24" color="#F0D79A" :weight="2" />
+						<bl-icon name="chevron-right" :size="24" color="#E5C58A" :weight="2" />
 					</view>
 				</view>
 				<view class="hero-copy">
@@ -29,17 +29,17 @@
 		<view class="surface">
 			<view class="assurance">
 				<view class="assurance-item">
-					<bl-icon name="shield-check" :size="30" color="#2C7256" :weight="2" />
+					<bl-icon name="shield-check" :size="30" color="#4376AB" :weight="2" />
 					<text>微信身份验证</text>
 				</view>
 				<view class="assurance-divider"></view>
 				<view class="assurance-item">
-					<bl-icon name="history" :size="30" color="#2C7256" :weight="2" />
+					<bl-icon name="history" :size="30" color="#4376AB" :weight="2" />
 					<text>兑奖记录可查</text>
 				</view>
 				<view class="assurance-divider"></view>
 				<view class="assurance-item">
-					<bl-icon name="store" :size="30" color="#2C7256" :weight="2" />
+					<bl-icon name="store" :size="30" color="#4376AB" :weight="2" />
 					<text>门店核销互通</text>
 				</view>
 			</view>
@@ -56,7 +56,7 @@
 
 			<checkbox-group class="consent-group" @change="onAgreeChange">
 				<label class="consent-row">
-					<checkbox class="consent-check" value="agree" :checked="agreed" color="#0E3B2E" />
+					<checkbox class="consent-check" value="agree" :checked="agreed" color="#102E53" />
 					<view class="consent-copy">
 						<text>我已阅读并同意</text>
 						<text class="legal-link" @tap.stop="openLegal('agreement')">《用户服务协议》</text>
@@ -68,7 +68,7 @@
 
 			<button class="wechat-button" :class="{ disabled: loading }" :disabled="loading" @tap="submit">
 				<view v-if="loading" class="loading-ring"></view>
-				<bl-icon v-else name="message-circle" :size="36" color="#FFF8E8" :weight="2.1" />
+				<bl-icon v-else name="message-circle" :size="36" color="#F5F9FD" :weight="2.1" />
 				<text>{{ loading ? '正在安全登录…' : '微信快捷登录' }}</text>
 			</button>
 
@@ -77,7 +77,7 @@
 			</view>
 
 			<view class="privacy-note">
-				<bl-icon name="lock" :size="25" color="#8B9A92" :weight="1.9" />
+				<bl-icon name="lock" :size="25" color="#60768C" :weight="1.9" />
 				<text>微信身份仅用于创建兑奖账户，不会自动获取你的手机号。</text>
 			</view>
 		</view>
@@ -104,7 +104,7 @@
 		},
 		coupon: {
 			title: '登录后查看我的优惠券',
-			sub: '未中奖发放的补偿券与到期时间，登录后即可查看。'
+			sub: '已领取的活动优惠券与到期时间，登录后即可查看。'
 		},
 		notice: {
 			title: '登录后接收服务通知',
@@ -267,7 +267,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #FFF8E8;
+		color: #F5F9FD;
 		font-size: 38rpx;
 		font-weight: 800;
 		box-shadow: 0 10rpx 26rpx rgba(5, 22, 17, 0.26);
@@ -285,7 +285,7 @@
 	}
 
 	.brand-name {
-		color: #FFF8E8;
+		color: #F5F9FD;
 		font-size: 32rpx;
 		font-weight: 800;
 		letter-spacing: 4rpx;
@@ -313,7 +313,7 @@
 
 	.hero-title {
 		margin-top: 18rpx;
-		color: #FFF8E8;
+		color: #F5F9FD;
 		font-size: 50rpx;
 		font-weight: 800;
 		line-height: 1.24;
@@ -428,7 +428,7 @@
 		margin-top: 28rpx;
 		border-radius: $bl-r-md;
 		background: $bl-green;
-		color: #FFF8E8;
+		color: #F5F9FD;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -454,7 +454,7 @@
 		width: 30rpx;
 		height: 30rpx;
 		border: 3rpx solid rgba(255, 248, 232, 0.32);
-		border-top-color: #FFF8E8;
+		border-top-color: #F5F9FD;
 		border-radius: 50%;
 		animation: spin 800ms linear infinite;
 	}

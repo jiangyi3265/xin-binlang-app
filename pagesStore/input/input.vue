@@ -6,7 +6,7 @@
 			<view class="card bl-card">
 				<view class="card-h">
 					<view class="card-ico">
-						<bl-icon name="keyboard" :size="44" color="#0E3B2E" :weight="1.7" />
+						<bl-icon name="keyboard" :size="44" color="#102E53" :weight="1.7" />
 					</view>
 					<view class="card-txt">
 						<text class="card-t">手动输入核销码</text>
@@ -41,7 +41,7 @@
 				</view>
 
 				<view class="scan bl-btn bl-btn-ghost" @tap="toScan">
-					<bl-icon name="scan-qr" :size="34" color="#0E3B2E" :weight="1.9" />
+					<bl-icon name="scan-qr" :size="34" color="#102E53" :weight="1.9" />
 					<text class="scan-t">切换扫码核销</text>
 				</view>
 			</view>
@@ -54,7 +54,7 @@
 				</view>
 				<view v-if="canView" class="bl-sec-more" @tap="goLogs">
 					<text>全部日志</text>
-					<bl-icon name="chevron-right" :size="24" color="#8B9A92" :weight="2" />
+					<bl-icon name="chevron-right" :size="24" color="#60768C" :weight="2" />
 				</view>
 			</view>
 
@@ -63,7 +63,7 @@
 			<view v-for="l in recent" :key="l.id" class="lg bl-card">
 				<view class="lg-ico" :class="l.type === 'verify' ? 'ok' : 'no'">
 					<bl-icon :name="l.type === 'verify' ? 'check-circle' : 'ban'" :size="32"
-						:color="l.type === 'verify' ? '#2C7256' : '#C0392B'" :weight="1.8" />
+						:color="l.type === 'verify' ? '#4376AB' : '#C0392B'" :weight="1.8" />
 				</view>
 				<view class="lg-txt">
 					<view class="lg-r1">
@@ -193,7 +193,7 @@
 
 	.cell.is-fill {
 		background: #fff;
-		border-color: rgba(14, 59, 46, 0.5);
+		border-color: rgba(16, 46, 83, 0.5);
 	}
 
 	.cell.is-on {

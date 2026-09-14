@@ -22,7 +22,7 @@
 
 <style lang="scss">
 	/* ============================================================
-	   全局基础样式 —— 金榔记 · 开码有奖
+	   全局基础样式 —— 倌榔 · 开码有奖
 	   ============================================================ */
 	page {
 		background: $bl-paper;
@@ -83,8 +83,8 @@
 				transparent 1rpx,
 				transparent 9rpx),
 			repeating-linear-gradient(-45deg,
-				rgba(14, 59, 46, 0.022) 0,
-				rgba(14, 59, 46, 0.022) 1rpx,
+				rgba(16, 46, 83, 0.022) 0,
+				rgba(16, 46, 83, 0.022) 1rpx,
 				transparent 1rpx,
 				transparent 11rpx);
 	}
@@ -236,7 +236,7 @@
 	.bl-tag-green {
 		color: $bl-ok;
 		background: $bl-green-lt;
-		border: 1rpx solid rgba(44, 114, 86, 0.22);
+		border: 1rpx solid rgba(67, 118, 171, 0.22);
 	}
 
 	.bl-tag-red {
@@ -290,7 +290,7 @@
 	.bl-btn-ghost {
 		color: $bl-green;
 		background: transparent;
-		border: 2rpx solid rgba(14, 59, 46, 0.24);
+		border: 2rpx solid rgba(16, 46, 83, 0.24);
 	}
 
 	.bl-btn-line {

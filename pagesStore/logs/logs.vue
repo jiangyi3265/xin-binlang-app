@@ -3,14 +3,14 @@
 		<bl-navbar title="核销日志" bg="paper" home="/pagesStore/home/home" />
 
 		<view v-if="!canView" class="deny">
-			<bl-icon name="lock" :size="72" color="#B4BFB8" :weight="1.5" />
+			<bl-icon name="lock" :size="72" color="#9AAEBF" :weight="1.5" />
 			<text class="deny-t">店员账号无日志查看权限</text>
 		</view>
 
 		<template v-else>
 			<view class="bl-wrap">
 				<view class="notice">
-					<bl-icon name="shield-check" :size="30" color="#2C7256" :weight="1.8" />
+					<bl-icon name="shield-check" :size="30" color="#4376AB" :weight="1.8" />
 					<view class="notice-txt">
 						<text class="notice-t">全平台操作留痕</text>
 						<text class="notice-d">核销与拦截日志均记录操作人、时间与门店定位，永久保存且不可删除</text>
@@ -45,15 +45,15 @@
 							</view>
 							<text class="lg-p">{{ l.prizeName }} · 顾客 {{ l.userNick }}</text>
 							<view class="lg-kv">
-								<bl-icon name="user-check" :size="22" color="#8B9A92" :weight="1.8" />
+								<bl-icon name="user-check" :size="22" color="#60768C" :weight="1.8" />
 								<text class="lg-kv-t">操作人 {{ l.byName }}</text>
 							</view>
 							<view class="lg-kv">
-								<bl-icon name="clock" :size="22" color="#8B9A92" :weight="1.8" />
+								<bl-icon name="clock" :size="22" color="#60768C" :weight="1.8" />
 								<text class="lg-kv-t">{{ fmt(l.at, 'YYYY-MM-DD HH:mm:ss') }}</text>
 							</view>
 							<view class="lg-kv">
-								<bl-icon name="map-pin" :size="22" color="#8B9A92" :weight="1.8" />
+								<bl-icon name="map-pin" :size="22" color="#60768C" :weight="1.8" />
 								<text class="lg-kv-t">{{ l.pos }}</text>
 							</view>
 							<view v-if="l.type !== 'verify'" class="lg-res">
@@ -130,7 +130,7 @@
 		align-items: flex-start;
 		padding: 22rpx;
 		background: $bl-green-lt;
-		border: 1rpx solid rgba(44, 114, 86, 0.2);
+		border: 1rpx solid rgba(67, 118, 171, 0.2);
 		border-radius: $bl-r-md;
 	}
 
@@ -179,7 +179,7 @@
 			border-color: $bl-green;
 
 			text {
-				color: #FFF6E6;
+				color: #F5F9FD;
 				font-weight: 700;
 			}
 		}

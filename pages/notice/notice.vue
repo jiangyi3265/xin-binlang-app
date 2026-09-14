@@ -16,7 +16,7 @@
 		<view v-else class="bl-wrap">
 			<view class="banner">
 				<view class="banner-ico">
-					<bl-icon name="bell" :size="38" color="#B8892B" :weight="1.8" />
+					<bl-icon name="bell" :size="38" color="#94692B" :weight="1.8" />
 				</view>
 				<view class="banner-txt">
 					<text class="banner-t">微信服务通知已开启</text>
@@ -38,7 +38,7 @@
 					<text class="nt-d">{{ n.desc }}</text>
 					<view v-if="n.link" class="nt-more">
 						<text class="nt-more-t">查看详情</text>
-						<bl-icon name="chevron-right" :size="22" color="#0E3B2E" :weight="2" />
+						<bl-icon name="chevron-right" :size="22" color="#102E53" :weight="2" />
 					</view>
 				</view>
 				<view v-if="!n.read" class="nt-dot"></view>
@@ -52,11 +52,11 @@
 	import { rel } from '@/utils/date.js'
 
 	const MAP = {
-		win: { icon: 'trophy', color: '#B8892B', bg: '#FAF1DC' },
+		win: { icon: 'trophy', color: '#94692B', bg: '#F6EEDC' },
 		coupon: { icon: 'ticket-percent', color: '#2F6D8C', bg: '#EAF2F6' },
-		verify: { icon: 'badge-check', color: '#2C7256', bg: '#E7EFEA' },
+		verify: { icon: 'badge-check', color: '#4376AB', bg: '#E6EFF8' },
 		expire: { icon: 'hourglass', color: '#C0392B', bg: '#FCEDEA' },
-		expired: { icon: 'ban', color: '#8B9A92', bg: '#F2F1EC' }
+		expired: { icon: 'ban', color: '#60768C', bg: '#F2F1EC' }
 	}
 
 	export default {

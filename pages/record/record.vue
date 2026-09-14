@@ -19,13 +19,13 @@
 				</view>
 				<view class="sum-x"></view>
 				<view class="sum-i">
-					<text class="sum-n bl-num" style="color:#B8892B">{{ winList.length }}</text>
+					<text class="sum-n bl-num" style="color:#94692B">{{ winList.length }}</text>
 					<text class="sum-l">中奖</text>
 				</view>
 				<view class="sum-x"></view>
 				<view class="sum-i">
 					<text class="sum-n bl-num" style="color:#C0392B">{{ pendingCount }}</text>
-					<text class="sum-l">待核销</text>
+					<text class="sum-l">待领取</text>
 				</view>
 				<view class="sum-x"></view>
 				<view class="sum-i">
@@ -57,7 +57,7 @@
 				<view v-for="r in all" :key="r.id" class="fl bl-card" @tap="open(r)">
 					<view class="fl-l" :class="r.win ? 'is-win' : 'is-lose'">
 						<bl-icon :name="r.win ? 'gift' : 'leaf'" :size="40"
-							:color="r.win ? '#B8892B' : '#9BB0A5'" :weight="1.7" />
+							:color="r.win ? '#94692B' : '#9BB0A5'" :weight="1.7" />
 					</view>
 					<view class="fl-m">
 						<view class="fl-r1">
@@ -73,7 +73,7 @@
 						</view>
 						<view class="fl-r3">
 							<text class="fl-res" :class="r.win ? 'win' : ''">
-								{{ r.win ? r.prizeName : '未中奖，已发放补偿券' }}
+								{{ r.win ? r.prizeName : '谢谢惠顾，本次未中奖' }}
 							</text>
 						</view>
 					</view>
@@ -109,15 +109,15 @@
 								<text class="pz-v">{{ fmt(r.redeemAt, 'YYYY-MM-DD HH:mm') }}</text>
 							</view>
 							<view v-if="r.status === 'verified'" class="pz-kv">
-								<text class="pz-k">核销门店</text>
-								<text class="pz-v">{{ r.storeName }}</text>
+								<text class="pz-k">{{ r.prizeType === 'cash' ? '到账账户' : '核销门店' }}</text>
+								<text class="pz-v">{{ r.prizeType === 'cash' ? '微信零钱' : r.storeName }}</text>
 							</view>
 							<view v-else-if="r.status === 'pending'" class="pz-kv">
-								<text class="pz-k">领取门店</text>
-								<text class="pz-v">{{ r.preferStoreName || '未选择' }}</text>
+								<text class="pz-k">{{ r.prizeType === 'cash' ? '领取方式' : '领取门店' }}</text>
+								<text class="pz-v">{{ r.prizeType === 'cash' ? '打开凭证领取到微信' : r.preferStoreName || '未选择' }}</text>
 							</view>
 							<view v-if="r.status === 'verified'" class="pz-kv">
-								<text class="pz-k">核销时间</text>
+								<text class="pz-k">{{ r.prizeType === 'cash' ? '到账时间' : '核销时间' }}</text>
 								<text class="pz-v">{{ fmt(r.verifyAt, 'YYYY-MM-DD HH:mm') }}</text>
 							</view>
 						</view>
@@ -126,32 +126,32 @@
 					<view class="pz-bot">
 						<view class="pz-bot-l">
 							<template v-if="r.status === 'pending'">
-								<bl-icon name="timer" :size="26" :color="urgent(r) ? '#C0392B' : '#8B9A92'"
+								<bl-icon name="timer" :size="26" :color="urgent(r) ? '#C0392B' : '#60768C'"
 									:weight="1.8" />
 								<text class="pz-left" :class="{ urgent: urgent(r) }">
 									剩 {{ daysLeft(r.expireAt) }} 天到期
 								</text>
 							</template>
 							<template v-else-if="r.status === 'verified'">
-								<bl-icon name="check-circle" :size="26" color="#2C7256" :weight="1.8" />
-								<text class="pz-left">已完成核销</text>
+								<bl-icon name="check-circle" :size="26" color="#4376AB" :weight="1.8" />
+								<text class="pz-left">{{ r.prizeType === 'cash' ? '现金已到账' : '已完成核销' }}</text>
 							</template>
 							<template v-else-if="r.status === 'frozen'">
 								<bl-icon name="lock" :size="26" color="#C0392B" :weight="1.8" />
 								<text class="pz-left urgent">订单已冻结</text>
 							</template>
 							<template v-else>
-								<bl-icon name="ban" :size="26" color="#B4BFB8" :weight="1.8" />
+								<bl-icon name="ban" :size="26" color="#9AAEBF" :weight="1.8" />
 								<text class="pz-left">已超期失效</text>
 							</template>
 						</view>
 						<view v-if="r.status === 'pending'" class="pz-btn bl-btn bl-btn-gold bl-btn-sm"
 							@tap.stop="open(r)">
-							<text>出示凭证</text>
+							<text>{{ r.prizeType === 'cash' ? '领取红包' : '出示凭证' }}</text>
 						</view>
 						<view v-else class="pz-more">
 							<text>详情</text>
-							<bl-icon name="chevron-right" :size="22" color="#8B9A92" :weight="2" />
+							<bl-icon name="chevron-right" :size="22" color="#60768C" :weight="2" />
 						</view>
 					</view>
 				</view>
@@ -187,8 +187,8 @@
 			chips() {
 				return [
 					{ k: 'all', t: '全部', n: this.winList.length },
-					{ k: 'pending', t: '待核销', n: store.myPrizeList('pending').length },
-					{ k: 'verified', t: '已核销', n: store.myPrizeList('verified').length },
+					{ k: 'pending', t: '待领取', n: store.myPrizeList('pending').length },
+					{ k: 'verified', t: '已领取', n: store.myPrizeList('verified').length },
 					{ k: 'expired', t: '已过期', n: store.myPrizeList('expired').length },
 					{ k: 'frozen', t: '已冻结', n: store.myPrizeList('frozen').length }
 				]
@@ -213,7 +213,7 @@
 				return daysLeft(r.expireAt) <= 3
 			},
 			stText(s) {
-				return { pending: '待核销', verified: '已核销', expired: '已过期', frozen: '已冻结' }[s] || ''
+				return { pending: '待领取', verified: '已领取', expired: '已过期', frozen: '已冻结' }[s] || ''
 			},
 			stTag(s) {
 				return {
@@ -229,7 +229,7 @@
 			},
 			open(r) {
 				if (!r.win) {
-					uni.showToast({ title: '本次未中奖，已发放补偿券', icon: 'none' })
+					uni.showToast({ title: '本次谢谢惠顾，本次未中奖', icon: 'none' })
 					return
 				}
 				uni.navigateTo({ url: '/pages/record/detail?id=' + r.id })
@@ -247,7 +247,7 @@
 	/* ============ 概览 ============ */
 	.sum {
 		margin-top: 12rpx;
-		background: linear-gradient(120deg, #14332A 0%, #0B241C 100%);
+		background: linear-gradient(120deg, #14385E 0%, #0B2445 100%);
 		border-radius: $bl-r-lg;
 		padding: 30rpx 0;
 		display: flex;
@@ -264,7 +264,7 @@
 
 	.sum-n {
 		font-size: 42rpx;
-		color: #FFF6E6;
+		color: #F5F9FD;
 	}
 
 	.sum-l {
@@ -434,7 +434,7 @@
 			border-color: $bl-green;
 
 			text {
-				color: #FFF6E6;
+				color: #F5F9FD;
 				font-weight: 700;
 			}
 		}

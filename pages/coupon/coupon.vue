@@ -4,7 +4,7 @@
 
 		<view v-if="!logged" class="bl-wrap">
 			<bl-guest icon="ticket-percent" title="登录后查看我的优惠券" reason="coupon"
-				desc="未中奖自动发放的补偿券、面额与有效期，登录后即可查看。"
+				desc="已发放优惠券的面额与有效期，登录后即可查看。"
 				browse="先去看看可用门店" @browse="use" />
 		</view>
 
@@ -28,7 +28,7 @@
 			</view>
 
 			<bl-empty v-if="!list.length" icon="ticket-percent" text="暂无优惠券"
-				:sub="tab === 'usable' ? '参与兑奖，未中奖也有补偿券' : '这里空空如也'" />
+				:sub="tab === 'usable' ? '已领取的活动优惠券会显示在这里' : '这里空空如也'" />
 
 			<view v-for="c in list" :key="c.id" class="cp" :class="{ dead: tab !== 'usable' }">
 				<view class="cp-l">
@@ -51,7 +51,7 @@
 					<text class="cp-s">{{ c.sub }} · 来源：{{ c.from }}</text>
 					<view class="cp-foot">
 						<view class="cp-time">
-							<bl-icon name="clock" :size="22" :color="tab === 'usable' ? '#B8892B' : '#B4BFB8'"
+							<bl-icon name="clock" :size="22" :color="tab === 'usable' ? '#94692B' : '#9AAEBF'"
 								:weight="1.8" />
 							<text class="cp-time-t">{{ fmt(c.at, 'MM-DD') }} 至 {{ fmt(c.expireAt, 'YYYY-MM-DD') }}</text>
 						</view>
@@ -63,7 +63,7 @@
 			</view>
 
 			<view v-if="list.length" class="tip">
-				<bl-icon name="info" :size="24" color="#8B9A92" :weight="1.8" />
+				<bl-icon name="info" :size="24" color="#60768C" :weight="1.8" />
 				<text class="tip-t">优惠券不可叠加使用，不可兑换现金，最终解释权归主办方所有</text>
 			</view>
 		</view>
@@ -127,7 +127,7 @@
 		margin-top: 12rpx;
 		padding: 34rpx 30rpx;
 		border-radius: $bl-r-lg;
-		background: linear-gradient(120deg, #14332A 0%, #0B241C 100%);
+		background: linear-gradient(120deg, #14385E 0%, #0B2445 100%);
 		box-shadow: $bl-sd-green;
 		overflow: hidden;
 	}
@@ -139,7 +139,7 @@
 
 	.head-n {
 		font-size: 68rpx;
-		color: #F0D79A;
+		color: #E5C58A;
 	}
 
 	.head-t {
@@ -186,7 +186,7 @@
 			border-color: $bl-green;
 
 			text {
-				color: #FFF6E6;
+				color: #F5F9FD;
 				font-weight: 700;
 			}
 		}

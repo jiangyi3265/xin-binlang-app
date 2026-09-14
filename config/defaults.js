@@ -1,7 +1,7 @@
 const CONFIG = {
-	brand: '金榔记',
-	brandEn: 'JINLANGJI',
-	brandMark: '榔',
+	brand: '倌榔',
+	brandEn: 'GUANLANG',
+	brandMark: '倌',
 	brandLogo: '',
 	adminSubtitle: '总部运营中枢',
 	actName: '开码有礼',
@@ -13,22 +13,21 @@ const CONFIG = {
 	codeLen: 6,
 	dailyLimit: 0,
 	prizeValidDays: 30,
-	homeBg: '/assets/brand-grove-v2.jpg',
-	poster: '/assets/hero-fruit.jpg',
-	productImg: '/assets/product-30.png',
-	ruleBg: '/assets/brand-grove-v2.jpg',
+	homeBg: '/assets/guanlang-botanical-blue.png',
+	poster: '',
+	productImg: '/assets/guanlang-product-50.jpg',
+	ruleBg: '/assets/guanlang-botanical-blue.png',
 	sceneImgs: [
-		'/assets/product-30.png',
-		'/assets/product-50.png',
-		'/assets/product-100.png'
+		'/assets/guanlang-product-30.png',
+		'/assets/guanlang-product-50.jpg'
 	],
 	notice: { on: false, badge: '公告', buttonText: '我知道了', image: '', title: '', date: '', lines: [] },
 	marquee: [],
 	steps: [
-		{ icon: 'shopping-bag', t: '购买活动产品', d: '购买带有“开码有奖”标识的金榔记产品' },
+		{ icon: 'shopping-bag', t: '购买活动产品', d: '购买带有“开码有奖”标识的倌榔产品' },
 		{ icon: 'package', t: '获取数字兑换码', d: '打开包装，找到包装内的 6 位数字兑换码' },
-		{ icon: 'message-circle', t: '微信登录兑奖', d: '微信授权登录后输入兑换码，立即查看中奖结果' },
-		{ icon: 'store', t: '到店出示凭证', d: '中奖后在有效期内选择门店，出示二维码完成核销' }
+		{ icon: 'message-circle', t: '登录后自主选牌', d: '微信登录后输入兑换码，选择一张牌翻开本次结果' },
+		{ icon: 'store', t: '按奖励领取', d: '换购奖到店补款核销；现金红包在微信小程序内领取' }
 	],
 	verifySteps: [
 		'顾客出示中奖记录中的领取凭证',

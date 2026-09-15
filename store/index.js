@@ -5,6 +5,7 @@ import {
 	apiAvailable,
 	clearCustomerSession,
 	download,
+	grantCustomerSession,
 	hasCustomerSession,
 	publicAsset,
 	request,
@@ -189,7 +190,8 @@ const store = {
 	},
 
 	isCustomerAuthenticated() {
-		return hasCustomerSession() && Boolean(state.customerToken) && state.onlineCustomer
+		// 网络是否通畅与身份是否有效分开判断，临时请求失败不应要求重复登录。
+		return hasCustomerSession() && Boolean(state.customerToken)
 	},
 
 	isStoreAuthenticated() {
@@ -266,10 +268,12 @@ const store = {
 			this.logoutCustomer(false)
 			throw Object.assign(new Error('登录成功但活动数据加载失败：' + (error && error.message || '请稍后重试')), { code: error && error.code || 'ERR_BOOTSTRAP' })
 		}
+		grantCustomerSession()
 		return state.user
 	},
 
 	logoutCustomer(clearSession = true) {
+		clearCustomerSession()
 		state.customerToken = ''
 		state.onlineCustomer = false
 		state.user = emptyUser()
@@ -279,7 +283,6 @@ const store = {
 		// 退回游客态后首页仍要有奖品与门店可看；loginCustomer 里的预清理传 false，
 		// 不必为此多打一轮公开接口。
 		if (clearSession) {
-			clearCustomerSession()
 			if (apiAvailable()) this.loadPublicShowcase().catch(() => {})
 		}
 	},
@@ -295,14 +298,16 @@ const store = {
 
 	async syncCustomerRequest() {
 		if (!apiAvailable() || !state.customerToken) throw authenticationError()
+		const token = state.customerToken
 		try {
-			const token = state.customerToken
 			const [boot, records, coupons, notices] = await Promise.all([
 				request('/customer/bootstrap', {}, token),
 				request('/customer/records', {}, token),
 				request('/customer/coupons', {}, token),
 				request('/customer/notices', {}, token)
 			])
+			// 旧会话的慢响应不能覆盖重新登录后的用户，也不能恢复已退出的会话。
+			if (token !== state.customerToken) return false
 			mergeConfig(boot.config)
 			state.user = mapCustomer(boot.user)
 			state.prizes = (boot.prizes || []).map(this.mapPrize)
@@ -315,6 +320,7 @@ const store = {
 			state.connection = 'online'
 			return true
 		} catch (error) {
+			if (token !== state.customerToken) return false
 			state.onlineCustomer = false
 			state.connection = 'offline'
 			if (error.status === 401 || error.code === 'ERR_AUTH') this.logoutCustomer()

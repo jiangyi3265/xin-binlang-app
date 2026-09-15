@@ -86,7 +86,7 @@
 
 <script>
 	import store from '@/store/index.js'
-	import { grantCustomerConsent, grantCustomerSession, hasCustomerConsent, revokeCustomerConsent } from '@/utils/api.js'
+	import { grantCustomerConsent, hasCustomerConsent, revokeCustomerConsent } from '@/utils/api.js'
 	import { miniProgramContentTop } from '@/utils/navigation.mjs'
 
 	// 用户是从哪个动作走过来的，标题就说哪件事，避免一句笼统的「请先登录」
@@ -183,7 +183,6 @@
 				this.errorText = ''
 				try {
 					await store.loginCustomer()
-					grantCustomerSession()
 					uni.showToast({ title: '登录成功', icon: 'none' })
 					this.skip()
 				} catch (error) {

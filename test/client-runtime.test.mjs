@@ -25,7 +25,7 @@ function loadApi(platform, enabled = false) {
 	let requested
 	runInNewContext(code, {
 		module, exports: module.exports,
-		require: path => { assert.equal(path, '@/config/wechat.mjs'); return { WECHAT_CONFIG } },
+		require: path => { if (path === 'vue') return require('vue'); assert.equal(path, '@/config/wechat.mjs'); return { WECHAT_CONFIG } },
 		uni: {
 			getStorageSync: key => key === 'xbl_api_origin' ? 'http://stale-debug-host:8897' : '',
 			request: options => { requested = options; options.success({ statusCode: 200, data: { ok: true, data: { accepted: true } } }) }

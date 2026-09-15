@@ -1,3 +1,4 @@
+import { ref } from 'vue'
 import { WECHAT_CONFIG } from '@/config/wechat.mjs'
 
 const BUILD_ORIGIN = import.meta.env.VITE_API_ORIGIN
@@ -10,7 +11,7 @@ const CUSTOMER_AUTH_ROUTE = 'pages/auth/login'
 const STORE_AUTH_ROUTE = 'pagesStore/login/login'
 const SALES_AUTH_ROUTE = 'pagesSales/login/login'
 let customerAuthOpenPending = false
-let customerSessionAuthenticated = false
+const customerSessionAuthenticated = ref(false)
 let authorizationInterceptorsInstalled = false
 let storeSessionResolver = () => false
 let salesSessionResolver = () => false
@@ -57,15 +58,15 @@ export function revokeCustomerConsent() {
 }
 
 export function hasCustomerSession() {
-	return customerSessionAuthenticated
+	return customerSessionAuthenticated.value
 }
 
 export function grantCustomerSession() {
-	customerSessionAuthenticated = true
+	customerSessionAuthenticated.value = true
 }
 
 export function clearCustomerSession() {
-	customerSessionAuthenticated = false
+	customerSessionAuthenticated.value = false
 }
 
 function normalizeRoute(value) {

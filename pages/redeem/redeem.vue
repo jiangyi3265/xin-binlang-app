@@ -60,7 +60,7 @@ export default {
    if (!result.ok) {
     this.tip = result.msg || '网络异常，请查询本次结果'
     if (['ERR_FORMAT','ERR_INVALID','ERR_USED','ERR_CLOSED','ERR_LIMIT','ERR_BLOCKED','ERR_NO_STORE','ERR_BATCH_PAUSED','ERR_BATCH_EXPIRED','ERR_OUTSIDE_ACTIVITY','ERR_CASH_NOT_CONFIGURED','ERR_CASH_AMOUNT'].includes(result.code)) this.selected = 0
-    if (result.code === 'ERR_AUTH' || result.code === 'ERR_AUTH_REQUIRED') { this.resumeAfterLogin = true; requireCustomerLogin({ reason: 'redeem' }) }
+    if (result.code === 'ERR_AUTH' || result.code === 'ERR_AUTH_REQUIRED') { this.selected = 0; this.resumeAfterLogin = true; requireCustomerLogin({ reason: 'redeem' }) }
     return
    }
    this.result = result; this.selected = result.record.selectedCard || card

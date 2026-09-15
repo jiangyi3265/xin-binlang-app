@@ -1,6 +1,8 @@
-const BUILD_ORIGIN = import.meta.env && import.meta.env.VITE_API_ORIGIN
-const BUILD_WECHAT_LOGIN = import.meta.env && import.meta.env.VITE_USE_WECHAT_LOGIN
-const BUILD_TEMPLATE_IDS = import.meta.env && import.meta.env.VITE_WECHAT_TEMPLATE_IDS
+import { WECHAT_CONFIG } from '@/config/wechat.mjs'
+
+const BUILD_ORIGIN = import.meta.env.VITE_API_ORIGIN
+const BUILD_WECHAT_LOGIN = import.meta.env.VITE_USE_WECHAT_LOGIN
+const BUILD_TEMPLATE_IDS = import.meta.env.VITE_WECHAT_TEMPLATE_IDS
 const DEFAULT_ORIGIN = BUILD_ORIGIN || 'http://127.0.0.1:8897'
 const CUSTOMER_CONSENT_KEY = 'xbl_customer_consent_v2'
 const CUSTOMER_CONSENT_VERSION = '2026-08-13'
@@ -14,11 +16,17 @@ let storeSessionResolver = () => false
 let salesSessionResolver = () => false
 
 export function apiOrigin() {
+	// #ifdef MP-WEIXIN
+	// H5 debug settings and stale local overrides must never redirect a WeChat session.
+	return WECHAT_CONFIG.apiOrigin
+	// #endif
+	// #ifndef MP-WEIXIN
 	try {
 		return String(uni.getStorageSync('xbl_api_origin') || DEFAULT_ORIGIN).replace(/\/$/, '')
 	} catch (e) {
 		return DEFAULT_ORIGIN
 	}
+	// #endif
 }
 
 export function apiAvailable() {
@@ -26,8 +34,14 @@ export function apiAvailable() {
 }
 
 export function shouldUseWechatLogin() {
+	// #ifdef MP-WEIXIN
+	// Every WeChat build uses real wx.login, including HBuilderX development previews.
+	return true
+	// #endif
+	// #ifndef MP-WEIXIN
 	if (String(BUILD_WECHAT_LOGIN).toLowerCase() === 'true') return true
 	try { return uni.getStorageSync('xbl_use_wechat_login') === '1' } catch (e) { return false }
+	// #endif
 }
 
 export function hasCustomerConsent() {

@@ -19,6 +19,7 @@
 			"style": {
 				"navigationStyle": "custom",
 				"navigationBarTitleText": "微信快捷登录",
+				"navigationBarTextStyle": "white",
 				"enablePullDownRefresh": false
 			}
 		},

@@ -238,9 +238,7 @@ const store = {
 			throw Object.assign(new Error('当前环境不支持微信登录，请在微信小程序中打开'), { code: 'ERR_WECHAT_LOGIN' })
 		}
 		if (!shouldUseWechatLogin()) {
-			// 构建时没读到 VITE_USE_WECHAT_LOGIN=true。以前这里只说「请使用微信小程序
-			// 完成登录」，在真微信里看到这句话完全无从下手，所以直接点破是构建配置问题。
-			throw Object.assign(new Error('当前包未开启微信登录：构建时缺少 VITE_USE_WECHAT_LOGIN=true，请确认 槟榔小程序端/.env 存在后重新编译'), { code: 'ERR_WECHAT_LOGIN' })
+			throw Object.assign(new Error('请在微信中打开倌榔小程序完成登录。'), { code: 'ERR_WECHAT_UNSUPPORTED' })
 		}
 		this.logoutCustomer(false)
 		let login

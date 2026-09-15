@@ -52,14 +52,16 @@ pnpm run build:mp-weixin
 
 - H5 产物：`dist/build/h5`，由后端 `H5_DIR` 指向并在 `/app/` 提供。
 - 微信小程序产物：`dist/build/mp-weixin`，导入微信开发者工具。
-- `check` 验证页面路由、图标、组件、资源体积、游客浏览与二维码结构。
+- `check` 验证页面路由、图标、组件、资源体积、游客浏览、二维码结构，以及微信登录配置与顶部安全区。
 - 构建完成后的 `sync-mp-static.mjs` 确保小程序静态资源和 tabBar 图标完整。
 
 `manifest.json` 已配置微信 AppID `wx8887b61da8f2edd6`。H5 使用 `https://xbinglangs.oksja.cn/app/`，CI 和发布流程均构建至该生产 API。uni-app 的 DCloud AppID 保持待配置，仅在后续需要对应原生 App 能力时补充。微信登录配置：
 
-1. 在前端环境设置独立 HTTPS `VITE_API_ORIGIN` 和 `VITE_USE_WECHAT_LOGIN=true`。
+1. 微信小程序使用 `config/wechat.mjs` 中的本项目 HTTPS API；H5 环境通过 `VITE_API_ORIGIN` 和 `VITE_USE_WECHAT_LOGIN` 单独配置。
 2. 在微信公众平台设置本项目 request 合法域名。
 3. 在后端配置对应 `WECHAT_APP_ID`、`WECHAT_APP_SECRET`，如需消息通知再配置订阅模板。
+
+微信小程序的 API 地址独立保存在 `config/wechat.mjs`，始终使用真实微信登录；HBuilderX 运行、真机预览和正式构建均不会读取 H5 的关闭登录开关或缓存接口地址。`.env` 中的回环地址和 `VITE_USE_WECHAT_LOGIN=false` 仅影响 H5 调试。调试小程序可运行 `pnpm run dev:mp-weixin`；正式包请运行 `pnpm run build:mp-weixin` 后导入 `dist/build/mp-weixin`，重新生成预览二维码或上传开发版本。已上传的旧包不会随 GitHub 推送自动更新。
 
 所有 `VITE_*` 变量都会进入客户端构建产物，只能存放公开配置。AppSecret、数据库密码及签名密钥只存于后端。本地开发默认使用回环地址；生产构建在 `.env.production` 中配置上述 API 和微信登录开关。CI 产物已使用本项目生产域名，可导入微信开发者工具验证；提交审核和正式发布仍需在微信平台完成。
 

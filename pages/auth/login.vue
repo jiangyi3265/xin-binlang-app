@@ -3,7 +3,7 @@
 		<view class="cover">
 			<image class="cover-image" :src="cfg.homeBg" mode="aspectFill" />
 			<view class="cover-shade"></view>
-			<view class="cover-content">
+			<view class="cover-content" :style="coverStyle">
 				<view class="brand-row">
 					<view class="brand">
 						<image v-if="cfg.brandLogo" class="brand-seal brand-seal-logo" :src="cfg.brandLogo" mode="aspectFill" />
@@ -87,6 +87,7 @@
 <script>
 	import store from '@/store/index.js'
 	import { grantCustomerConsent, grantCustomerSession, hasCustomerConsent, revokeCustomerConsent } from '@/utils/api.js'
+	import { miniProgramContentTop } from '@/utils/navigation.mjs'
 
 	// 用户是从哪个动作走过来的，标题就说哪件事，避免一句笼统的「请先登录」
 	const REASON_COPY = {
@@ -122,11 +123,13 @@
 				agreed: false,
 				loading: false,
 				errorText: '',
-				reason: ''
+				reason: '',
+				contentTop: 0
 			}
 		},
 		computed: {
 			cfg() { return store.state.config },
+			coverStyle() { return this.contentTop ? { paddingTop: this.contentTop + 'px' } : {} },
 			heroCopy() {
 				return Object.prototype.hasOwnProperty.call(REASON_COPY, this.reason) ? REASON_COPY[this.reason] : REASON_COPY.default
 			},
@@ -136,8 +139,15 @@
 		onLoad(options) {
 			this.agreed = hasCustomerConsent()
 			this.reason = (options && options.reason) || ''
+			this.updateContentTop()
 		},
+		onResize() { this.updateContentTop() },
 		methods: {
+			updateContentTop() {
+				// #ifdef MP-WEIXIN
+				this.contentTop = miniProgramContentTop(uni)
+				// #endif
+			},
 			// 登录页是用户自己点进来的，必须留一条原路返回的出口，
 			// 不能出现「不登录就走不掉」的登录墙。
 			skip() {
@@ -155,10 +165,10 @@
 			},
 			friendlyError(error) {
 				if (!error) return '暂时无法登录，请稍后重试。'
-				if (error.code === 'ERR_NETWORK') return '网络连接失败：请确认接口域名已加入小程序「request 合法域名」白名单。'
+				if (error.code === 'ERR_NETWORK') return '网络连接失败，请检查网络后重试。'
 				if (error.code === 'ERR_OFFLINE') return '当前运行环境不支持微信登录，请在微信小程序中打开。'
-				// 服务端会把微信返回的失败原因翻译成可执行的提示，别再用一句
-				// 「微信登录未完成」盖掉，否则线上排查无从下手。
+				if (error.code === 'ERR_WECHAT_NOT_CONFIGURED') return '登录服务暂未就绪，请稍后重试或联系客服。'
+				if (error.code === 'ERR_WECHAT_LOGIN' || error.code === 'ERR_WECHAT_AUTH') return '微信登录未完成，请退出小程序后重新打开并重试。'
 				return error.message || '暂时无法登录，请稍后重试。'
 			},
 			async submit() {
@@ -193,7 +203,7 @@
 	}
 
 	.cover {
-		height: 700rpx;
+		min-height: 650rpx;
 		position: relative;
 		overflow: hidden;
 	}
@@ -207,16 +217,17 @@
 	}
 
 	.cover-shade {
-		background: linear-gradient(180deg, rgba(7, 32, 24, 0.42) 0%, rgba(7, 32, 24, 0.7) 62%, rgba(7, 32, 24, 0.94) 100%);
+		background: linear-gradient(180deg, rgba(11, 36, 69, 0.42) 0%, rgba(11, 36, 69, 0.7) 62%, rgba(11, 36, 69, 0.94) 100%);
 	}
 
 	.cover-content {
 		position: relative;
 		z-index: 1;
-		height: 100%;
+		min-height: 650rpx;
 		padding: calc(42rpx + env(safe-area-inset-top)) 40rpx 96rpx;
 		display: flex;
 		flex-direction: column;
+		gap: 72rpx;
 	}
 
 	.brand-row {
@@ -262,7 +273,7 @@
 		width: 74rpx;
 		height: 74rpx;
 		border-radius: 14rpx;
-		background: $bl-red;
+		background: $bl-green;
 		border: 1rpx solid rgba(255, 248, 232, 0.55);
 		display: flex;
 		align-items: center;

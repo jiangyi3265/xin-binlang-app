@@ -7,7 +7,9 @@
 
 		<bl-navbar title="领奖凭证" bg="transparent" />
 
-		<view v-if="rec" class="bl-wrap">
+		<view v-if="!logged" class="bl-wrap"><bl-guest icon="ticket" title="登录后查看领奖凭证" reason="record" desc="请登录中奖时使用的微信账户，查看你的奖励与领取状态。" /></view>
+		<view v-else-if="!rec" class="bl-wrap"><bl-empty icon="ticket" text="暂未加载领奖凭证" :sub="loadError || '正在查询，请稍候'" /><button class="bl-btn bl-btn-primary" @tap="refreshRecord(true)">重新加载</button></view>
+		<view v-else class="bl-wrap">
 			<!-- ============ 凭证 ============ -->
 			<view class="tk">
 				<!-- 上半：奖品 -->
@@ -223,6 +225,8 @@
 			return {
 				id: '',
 				currentRecord: null,
+				recordSession: '',
+				loadError: '',
 				showPick: false,
 				cd: { d: 0, h: 0, m: 0, s: 0 },
 				timer: null,
@@ -235,7 +239,8 @@
 		computed: {
 			cfg() { return store.state.config },
 			stores() { return store.STORES },
-			rec() { return this.currentRecord || store.recordById(this.id) },
+			logged() { return store.isCustomerAuthenticated() },
+			rec() { return this.logged ? ((this.recordSession === store.state.customerToken ? this.currentRecord : null) || store.recordById(this.id)) : null },
 			poolName() {
 				const p = this.rec && store.poolById(this.rec.poolId)
 				return p ? p.name : '—'
@@ -257,6 +262,7 @@
 		},
 		onLoad(opt) {
 			this.id = (opt && (opt.id || opt.code)) || ''
+			this.recordSession = store.state.customerToken
 			if (opt && opt.code) {
 				const r = store.recordByCode(opt.code)
 				if (r) {
@@ -298,13 +304,18 @@
 			},
 			async refreshRecord(manual = false) {
 				if (!this.id || this.syncing) return
+				if (!this.logged) { this.currentRecord = null; this.stopStatusPolling(); return }
+				const token = store.state.customerToken
 				const previousStatus = this.rec && this.rec.status
 				this.syncing = true
 				if (manual) this.refreshing = true
 				try {
 					const latest = await store.refreshCustomerRecord(this.id)
+					if (token !== store.state.customerToken || !this.logged) return
 					this.id = latest.id
 					this.currentRecord = latest
+					this.recordSession = token
+					this.loadError = ''
 					if (latest.prizeType === 'cash') this.$refs.cashPanel?.refresh()
 					this.tick()
 					if (latest.status !== 'pending') this.stopStatusPolling()
@@ -318,6 +329,8 @@
 						uni.showToast({ title: '当前状态：' + statusText, icon: 'none' })
 					}
 				} catch (error) {
+					this.loadError = error.message || '请检查网络后重新加载'
+					if (!this.logged || error.code === 'ERR_SESSION_CHANGED' || error.status === 404) { this.currentRecord = null; this.stopStatusPolling() }
 					if (manual) uni.showToast({ title: error.message || '状态刷新失败', icon: 'none' })
 				} finally {
 					this.syncing = false

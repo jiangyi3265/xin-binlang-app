@@ -20,6 +20,7 @@ const STORES = []
 const ACCOUNTS = []
 let customerSyncTask = null
 let storeSyncTask = null
+let storeSyncToken = ''
 let publicShowcaseTask = null
 
 function clone(value) {
@@ -58,6 +59,7 @@ const state = reactive({
 	storeToken: '',
 	onlineCustomer: false,
 	onlineStore: false,
+	storeAuthenticated: false,
 	connection: 'offline',
 	remoteStats: null,
 	remoteTrend: [],
@@ -65,6 +67,8 @@ const state = reactive({
 	remoteStaff: [],
 	prizes: [],
 	records: [],
+	storeRecords: [],
+	storePrizes: [],
 	logs: [],
 	coupons: [],
 	notices: [],
@@ -140,10 +144,13 @@ const store = {
 		state.remoteAccount = null
 		state.onlineCustomer = false
 		state.onlineStore = false
+		state.storeAuthenticated = false
 		state.connection = 'offline'
 		state.user = emptyUser()
 		state.prizes = []
 		state.records = []
+		state.storeRecords = []
+		state.storePrizes = []
 		state.logs = []
 		state.coupons = []
 		state.notices = []
@@ -174,7 +181,7 @@ const store = {
 				this.applyStores(stores)
 				if (pools) this.applyPools(pools)
 				// 已登录时 state.prizes 是带库存的完整奖品库，别被公开视图覆盖回去
-				if (prizes && !this.isCustomerAuthenticated() && !this.isStoreAuthenticated()) {
+				if (prizes && !this.isCustomerAuthenticated()) {
 					state.prizes = prizes.map(this.mapPrize)
 				}
 				state.connection = 'online'
@@ -195,7 +202,7 @@ const store = {
 	},
 
 	isStoreAuthenticated() {
-		return Boolean(state.storeToken && state.remoteAccount && state.onlineStore)
+		return Boolean(state.storeToken && state.remoteAccount && state.storeAuthenticated)
 	},
 
 	mapRecord(record) {
@@ -334,10 +341,12 @@ const store = {
 			if (options.throwOnError) throw error
 			return false
 		}
-		if (storeSyncTask) return storeSyncTask
-		storeSyncTask = (async () => {
+		const token = state.storeToken
+		const account = state.remoteAccount
+		if (storeSyncTask && storeSyncToken === token) return storeSyncTask.catch(error => options.throwOnError ? Promise.reject(error) : false)
+		storeSyncToken = token
+		const task = (async () => {
 			try {
-				const token = state.storeToken
 				const [boot, orders, prizes, trend, rank, stores] = await Promise.all([
 					request('/store/bootstrap', {}, token),
 					request('/store/orders?pageSize=200', {}, token),
@@ -348,11 +357,13 @@ const store = {
 				])
 				let logs = { items: [] }
 				let staff = []
-				if (state.remoteAccount.role !== 'staff') logs = await request('/store/logs?pageSize=200', {}, token)
-				if (state.remoteAccount.role === 'owner') staff = await request('/store/staff', {}, token)
+				if (token !== state.storeToken) return false
+				if (account.role !== 'staff') logs = await request('/store/logs?pageSize=200', {}, token)
+				if (account.role === 'owner') staff = await request('/store/staff', {}, token)
+				if (token !== state.storeToken) return false
 				state.remoteAccount = { ...boot.account, account: boot.account.username, avatar: publicAsset(boot.account.avatar) }
-				state.records = (orders.items || []).map(this.mapRecord)
-				state.prizes = (prizes || []).map(this.mapPrize)
+				state.storeRecords = (orders.items || []).map(this.mapRecord)
+				state.storePrizes = (prizes || []).map(this.mapPrize)
 				this.applyPools(Array.from(new Map((prizes || []).map(item => [item.pool, {
 					id: item.pool,
 					name: item.poolName || item.pool,
@@ -369,19 +380,23 @@ const store = {
 				state.connection = 'online'
 				return true
 			} catch (error) {
+				if (token !== state.storeToken) return false
 				state.onlineStore = false
+				state.connection = 'offline'
 				if (error.status === 401 || error.code === 'ERR_AUTH') this.logout()
-				if (options.throwOnError) throw error
-				return false
+				throw error
 			} finally {
-				storeSyncTask = null
+				if (storeSyncTask === task) { storeSyncTask = null; storeSyncToken = '' }
 			}
 		})()
-		return storeSyncTask
+		storeSyncTask = task
+		return task.catch(error => options.throwOnError ? Promise.reject(error) : false)
 	},
 
 	syncActive() {
-		if (this.isStoreAuthenticated()) return this.syncStoreData()
+		const pages = typeof getCurrentPages === 'function' ? getCurrentPages() : []
+		const route = pages[pages.length - 1]?.route || ''
+		if (route.startsWith('pagesStore/') && this.isStoreAuthenticated()) return this.syncStoreData()
 		if (this.isCustomerAuthenticated()) return this.syncCustomer()
 		// 游客态也要刷新：活动配置、奖品陈列和门店都可能被总部后台改过
 		return this.loadPublicShowcase().catch(() => false)
@@ -408,36 +423,47 @@ const store = {
 
 	async redeem(input, selectedCard) {
 		if (!this.isCustomerAuthenticated()) return { ok: false, code: 'ERR_AUTH_REQUIRED', msg: '请先登录后再兑换' }
+		const token = state.customerToken
 		const code = String(input || '').toUpperCase().trim()
 		try {
-			const result = await request('/customer/draw', { method: 'POST', data: { code, selectedCard, preferredStoreId: STORES[0] && STORES[0].id } }, state.customerToken)
+			const result = await request('/customer/draw', { method: 'POST', data: { code, selectedCard, preferredStoreId: STORES[0] && STORES[0].id } }, token)
+			if (token !== state.customerToken) return { ok: false, code: 'ERR_SESSION_CHANGED', msg: '登录账户已变化，请使用原微信账户查看本次兑奖记录' }
 			result.record = this.mapRecord(result.record)
 			state.records = [result.record, ...state.records.filter(item => item.id !== result.record.id)]
 			this.syncCustomer().catch(() => {})
 			return result
 		} catch (error) {
-			if (error.status === 401) this.logoutCustomer()
+			if (error.status === 401 && token === state.customerToken) this.logoutCustomer()
 			return { ok: false, code: error.code || 'ERR_NETWORK', msg: error.message }
 		}
 	},
 
 	async changePreferStore(recordId, storeId) {
 		if (!this.isCustomerAuthenticated()) throw authenticationError()
-		const record = await request('/customer/records/' + recordId + '/preferred-store', { method: 'PATCH', data: { storeId } }, state.customerToken)
+		const token = state.customerToken
+		const record = await request('/customer/records/' + recordId + '/preferred-store', { method: 'PATCH', data: { storeId } }, token)
+		if (token !== state.customerToken) throw Object.assign(new Error('登录状态已更新，请重新打开凭证'), { code: 'ERR_SESSION_CHANGED' })
 		const index = state.records.findIndex(item => item.id === recordId)
 		if (index >= 0) state.records.splice(index, 1, this.mapRecord(record))
-		return record
+		return this.mapRecord(record)
 	},
 
 	async refreshCustomerRecord(recordId) {
 		if (!this.isCustomerAuthenticated()) throw authenticationError()
 		const key = String(recordId || '').trim()
 		if (!key) throw new Error('兑奖记录编号不能为空')
-		const record = this.mapRecord(await request('/customer/records/' + encodeURIComponent(key) + '?refresh=' + Date.now(), {}, state.customerToken))
-		const index = state.records.findIndex(item => item.id === record.id || item.code === record.code)
-		if (index >= 0) state.records.splice(index, 1, record)
-		else state.records.unshift(record)
-		return record
+		const token = state.customerToken
+		try {
+			const record = this.mapRecord(await request('/customer/records/' + encodeURIComponent(key) + '?refresh=' + Date.now(), {}, token))
+			if (token !== state.customerToken || !this.isCustomerAuthenticated()) throw Object.assign(new Error('登录状态已更新，请重新打开凭证'), { code: 'ERR_SESSION_CHANGED' })
+			const index = state.records.findIndex(item => item.id === record.id || item.code === record.code)
+			if (index >= 0) state.records.splice(index, 1, record)
+			else state.records.unshift(record)
+			return record
+		} catch (error) {
+			if (token === state.customerToken && (error.status === 401 || error.code === 'ERR_AUTH')) this.logoutCustomer()
+			throw error
+		}
 	},
 
 	async loginCredentials(username, password) {
@@ -448,6 +474,8 @@ const store = {
 			state.storeToken = session.token
 			state.remoteAccount = { ...session.account, account: session.account.username, avatar: publicAsset(session.account.avatar) }
 			await this.syncStoreData({ throwOnError: true })
+			if (state.storeToken !== session.token || !state.remoteAccount) throw authenticationError('门店登录状态已更新，请重试')
+			state.storeAuthenticated = true
 			return state.remoteAccount
 		} catch (error) {
 			this.logout()
@@ -459,11 +487,13 @@ const store = {
 		state.storeToken = ''
 		state.remoteAccount = null
 		state.onlineStore = false
+		state.storeAuthenticated = false
 		state.remoteStats = null
 		state.remoteTrend = []
 		state.remoteRank = []
 		state.remoteStaff = []
-		state.records = []
+		state.storeRecords = []
+		state.storePrizes = []
 		state.logs = []
 	},
 
@@ -488,8 +518,8 @@ const store = {
 				data: { exchangePaid, position: currentStore ? currentStore.addr + '（门店定位）' : '总部核销工作台' }
 			}, state.storeToken)
 			result.record = this.mapRecord(result.record)
-			const index = state.records.findIndex(item => item.id === result.record.id)
-			if (index >= 0) state.records.splice(index, 1, result.record)
+			const index = state.storeRecords.findIndex(item => item.id === result.record.id)
+			if (index >= 0) state.storeRecords.splice(index, 1, result.record)
 			this.syncStoreData().catch(() => {})
 			return result
 		} catch (error) {
@@ -529,6 +559,8 @@ const store = {
 	storeById(id) { return STORES.find(item => item.id === id) },
 	recordById(id) { return state.records.find(item => item.id === id) },
 	recordByCode(code) { return state.records.find(item => item.code === String(code || '').toUpperCase()) },
+	storeRecordById(id) { return state.storeRecords.find(item => item.id === id) },
+	storeRecordByCode(code) { return state.storeRecords.find(item => item.code === String(code || '').toUpperCase()) },
 
 	tickExpire() {},
 
@@ -557,7 +589,7 @@ const store = {
 	},
 	canViewData() { return this.role() === 'owner' || this.role() === 'hq' },
 	storeOrders(status) {
-		let list = state.records.filter(item => item.win)
+		let list = state.storeRecords.filter(item => item.win)
 		if (status && status !== 'all') list = list.filter(item => item.status === status)
 		return list.sort((a, b) => (b.verifyAt || b.redeemAt) - (a.verifyAt || a.redeemAt))
 	},
@@ -566,7 +598,7 @@ const store = {
 	storeStats() { return state.remoteStats || emptyStoreStats() },
 	weekTrend() { return state.remoteTrend },
 	storeRank() { return state.remoteRank },
-	prizeLib() { return state.prizes.slice().sort((a, b) => b.value - a.value) }
+	prizeLib() { return state.storePrizes.slice().sort((a, b) => b.value - a.value) }
 }
 
 export default store

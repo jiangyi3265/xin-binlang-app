@@ -16,7 +16,7 @@ export default {
 	data() { return { payment: {}, busy: false, querying: false, error: '' } },
 	computed: {
 		statusLabel() { return this.record.status === 'expired' ? '红包已失效' : this.record.status === 'frozen' ? '红包已冻结' : this.payment.label || (this.record.cashState === 'SUCCESS' ? '已到账' : '待领取') },
-		canClaim() { return this.record.status === 'pending' && !['SUCCESS','FAIL','CANCELLED','REVIEW_REQUIRED','CANCELING','TRANSFERING','PROCESSING','ACCEPTED'].includes(this.payment.state) },
+		canClaim() { return this.record.status === 'pending' && this.payment.ready !== false && !['SUCCESS','FAIL','CANCELLED','REVIEW_REQUIRED','CANCELING','TRANSFERING','PROCESSING','ACCEPTED'].includes(this.payment.state) },
 		description() { if (this.record.cashState === 'SUCCESS' || this.payment.state === 'SUCCESS') return '现金已到账，请在微信零钱明细中查看。'; if (['FAIL','CANCELLED','REVIEW_REQUIRED'].includes(this.payment.state)) return '请联系客服核对领取结果，保留此凭证。'; if (this.payment.ready === false) return '现金领取暂未开放，你的中奖凭证已保留。'; return '点击领取后，按微信提示确认收款。实际到账状态以微信转账结果为准。' }
 	},
 	mounted() { this.refresh() },

@@ -127,7 +127,7 @@
 			return { id: '' }
 		},
 		computed: {
-			rec() { return store.recordById(this.id) },
+			rec() { return store.storeRecordById(this.id) },
 			cur() { return (this.rec && ST[this.rec.status]) || ST.pending },
 			stText() { return this.cur.t },
 			stDesc() { return this.cur.d },
@@ -143,7 +143,7 @@
 			this.id = (opt && opt.id) || ''
 			/* 也支持直接用核销码打开（扫码链路会用到） */
 			if (!this.id && opt && opt.code) {
-				const r = store.recordByCode(opt.code)
+				const r = store.storeRecordByCode(opt.code)
 				if (r) this.id = r.id
 			}
 		},

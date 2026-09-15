@@ -1,11 +1,11 @@
 <template>
 	<view class="flip-grid" :class="{ 'has-selection': selected > 0 }">
 		<button v-for="card in 6" :key="card" class="flip-card" :class="{ selected: selected === card, revealed: revealed && selected === card, muted: selected > 0 && selected !== card }"
-			:disabled="busy || selected > 0" role="button" :aria-label="revealed && selected === card ? title + '，' + detail : '选择第 ' + card + ' 张牌'" @tap="$emit('select', card)">
+			:disabled="disabled || busy || selected > 0" role="button" :aria-label="disabled ? '活动暂未开放' : revealed && selected === card ? title + '，' + detail : '选择第 ' + card + ' 张牌'" @tap="$emit('select', card)">
 			<view class="flip-inner">
 				<view class="flip-face flip-back" :aria-hidden="revealed && selected === card" :style="background ? { backgroundImage: 'url(' + background + ')' } : {}">
 					<view class="flip-border"></view><text class="flip-brand">{{ brand }}</text><text class="flip-en">GUANLANG</text>
-					<view class="flip-mark">礼</view><text class="flip-prompt">{{ busy && selected === card ? '正在开奖' : '选我翻牌' }}</text>
+					<view class="flip-mark">礼</view><text class="flip-prompt">{{ disabled ? '暂未开放' : busy && selected === card ? '正在开奖' : '选我翻牌' }}</text>
 				</view>
 				<view class="flip-face flip-front" :aria-hidden="!revealed || selected !== card" :class="'reward-' + rewardType">
 					<template v-if="selected === card">
@@ -21,7 +21,7 @@
 <script>
 export default {
 	emits: ['select'],
-	props: { brand: { type: String, default: '倌榔' }, background: String, selected: { type: Number, default: 0 }, busy: Boolean, revealed: Boolean,
+	props: { brand: { type: String, default: '倌榔' }, background: String, selected: { type: Number, default: 0 }, busy: Boolean, disabled: Boolean, revealed: Boolean,
 		rewardType: { type: String, default: 'lose' }, title: String, detail: String }
 }
 </script>

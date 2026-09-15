@@ -2,21 +2,23 @@
  <view class="draw-page">
   <view class="draw-header" :style="{ backgroundImage: 'url(' + cfg.homeBg + ')' }">
    <bl-navbar title="幸运翻牌" bg="transparent" :fixed="false" />
-   <view class="draw-heading"><text class="draw-kicker">{{ cfg.brand }} · 一码一礼</text><text class="draw-title">{{ stage === 'input' ? '好礼，藏在下一张牌里' : revealed ? '你的翻牌结果' : '选一张，翻开你的好礼' }}</text><text class="draw-sub">{{ stage === 'input' ? '输入包装内的兑换码，开启翻牌' : '每个兑换码限翻一张，选定后不可更换' }}</text></view>
+   <view class="draw-heading"><text class="draw-kicker">{{ cfg.brand }} · 一码一礼</text><text class="draw-title">{{ activityPaused ? '活动暂未开放' : stage === 'input' ? '好礼，藏在下一张牌里' : revealed ? '你的翻牌结果' : '选一张，翻开你的好礼' }}</text><text class="draw-sub">{{ activityPaused ? '请保管好兑换码，活动开放后再来翻牌' : stage === 'input' ? '输入包装内的兑换码，开启翻牌' : '每个兑换码限翻一张，选定后不可更换' }}</text></view>
   </view>
   <view class="draw-body">
    <view v-if="stage === 'input'" class="input-panel">
     <view class="input-product"><image :src="cfg.productImg" mode="aspectFit" /><view><text class="panel-title">包装内 6 位兑换码</text><text class="panel-note">请妥善保管包装，勿与他人共享兑换码</text></view></view>
     <input class="code-input" type="text" :value="code" maxlength="6" placeholder="请输入 6 位兑换码" confirm-type="done" @input="onInput" @confirm="prepare" />
     <text v-if="tip" class="draw-error">{{ tip }}</text>
-    <button class="action primary" :disabled="code.length !== 6" @tap="prepare">开始选牌</button>
-    <text class="input-note">{{ logged ? '一码一次，翻牌结果自动保存' : '选牌前请先完成微信登录' }}</text>
+    <button v-if="activityPaused" class="action primary" :disabled="refreshing" @tap="refreshActivity">{{ refreshing ? '正在刷新…' : '刷新活动状态' }}</button>
+    <button v-else class="action primary" :disabled="code.length !== 6" @tap="prepare">开始选牌</button>
+    <text class="input-note">{{ activityPaused ? '已参与的开奖结果仍可在兑奖记录中查看' : logged ? '一码一次，翻牌结果自动保存' : '选牌前请先完成微信登录' }}</text>
    </view>
    <view v-else class="cards-panel">
-    <view class="selection-status"><text>兑换码 {{ maskedCode }}</text><text>{{ loading ? '正在确定结果…' : revealed ? '已翻开第 ' + selected + ' 张牌' : '从下方 6 张牌中选择 1 张' }}</text></view>
-    <bl-flip-cards :brand="cfg.brand" :background="cfg.homeBg" :selected="selected" :busy="loading" :revealed="revealed" :reward-type="rewardType" :title="cardTitle" :detail="cardDetail" @select="choose" />
+    <view class="selection-status"><text>兑换码 {{ maskedCode }}</text><text>{{ loading ? '正在确定结果…' : revealed ? '已翻开第 ' + selected + ' 张牌' : activityPaused ? '等待活动开放' : '从下方 6 张牌中选择 1 张' }}</text></view>
+    <bl-flip-cards :brand="cfg.brand" :background="cfg.homeBg" :selected="selected" :busy="loading" :disabled="activityPaused" :revealed="revealed" :reward-type="rewardType" :title="cardTitle" :detail="cardDetail" @select="choose" />
     <text v-if="tip" class="draw-error">{{ tip }}</text>
-    <button v-if="tip && !revealed" class="action primary" @tap="retry">{{ selected ? '查询本次翻牌结果' : '重新输入兑换码' }}</button>
+    <button v-if="activityPaused" class="action primary" :disabled="refreshing" @tap="refreshActivity">{{ refreshing ? '正在刷新…' : '刷新活动状态' }}</button>
+    <button v-else-if="tip && !revealed" class="action primary" @tap="retry">{{ selected ? '查询本次翻牌结果' : '重新输入兑换码' }}</button>
     <view v-if="revealed" class="draw-result">
      <text class="result-eyebrow">{{ rewardType === 'lose' ? '本次结果' : '已为你保存奖励' }}</text>
      <text class="result-title">{{ resultTitle }}</text>
@@ -36,9 +38,10 @@
 import store from '@/store/index.js'
 import { requireCustomerLogin } from '@/utils/api.js'
 export default {
- data() { return { code: '', stage: 'input', selected: 0, loading: false, revealed: false, tip: '', result: {}, resumeAfterLogin: false, flipTimer: null } },
+ data() { return { code: '', stage: 'input', selected: 0, loading: false, refreshing: false, revealed: false, tip: '', errorCode: '', result: {}, resumeAfterLogin: false, flipTimer: null } },
  computed: {
   cfg() { return store.state.config }, logged() { return store.isCustomerAuthenticated() }, rec() { return this.result.record || {} },
+  activityPaused() { return !this.revealed && !this.selected && (this.errorCode === 'ERR_CLOSED' || (this.cfg.active === false && Boolean(this.cfg.actStart))) },
   maskedCode() { return this.code.slice(0, 2) + '••' + this.code.slice(-2) },
   rewardType() { return this.rec.win ? this.rec.prizeType || 'goods' : 'lose' },
   cardTitle() { return this.rewardType === 'lose' ? '谢谢惠顾' : this.rewardType === 'cash' ? '¥' + this.rec.prizeValue : this.rewardType === 'exchange' ? '加 ¥' + this.rec.exchangeAmount : '恭喜中奖' },
@@ -51,13 +54,24 @@ export default {
  onUnload() { clearTimeout(this.flipTimer) },
  methods: {
   onInput(event) { this.code = (event.detail.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); this.tip = '' },
-  prepare() { if (this.code.length !== 6) { this.tip = '请输入完整的 6 位兑换码'; return } if (!this.logged) { this.resumeAfterLogin = true; requireCustomerLogin({ reason: 'redeem' }); return } this.tip = ''; this.stage = 'choose' },
+  prepare() { if (this.activityPaused) { this.tip = '活动暂未开放，请保管好兑换码，开放后再来'; return } if (this.code.length !== 6) { this.tip = '请输入完整的 6 位兑换码'; return } if (!this.logged) { this.resumeAfterLogin = true; requireCustomerLogin({ reason: 'redeem' }); return } this.tip = ''; this.errorCode = ''; this.stage = 'choose' },
+  async refreshActivity() {
+   if (this.refreshing) return
+   this.refreshing = true
+   try {
+    await store.loadPublicShowcase()
+    this.errorCode = this.cfg.active ? '' : 'ERR_CLOSED'
+    this.tip = this.cfg.active ? '' : '活动仍未开放，无需更换兑换码，请稍后再来'
+   } catch (_) { this.tip = '暂时无法刷新活动状态，请检查网络后重试' }
+   finally { this.refreshing = false }
+  },
   async choose(card) {
-   if (this.loading || this.revealed || (this.selected && this.selected !== card)) return
-   this.selected = card; this.loading = true; this.tip = ''
+   if (this.activityPaused || this.loading || this.revealed || (this.selected && this.selected !== card)) return
+   this.selected = card; this.loading = true; this.tip = ''; this.errorCode = ''
    const result = await store.redeem(this.code, card)
    this.loading = false
    if (!result.ok) {
+    this.errorCode = result.code || ''
     this.tip = result.msg || '网络异常，请查询本次结果'
     if (['ERR_FORMAT','ERR_INVALID','ERR_USED','ERR_CLOSED','ERR_LIMIT','ERR_BLOCKED','ERR_NO_STORE','ERR_BATCH_PAUSED','ERR_BATCH_EXPIRED','ERR_OUTSIDE_ACTIVITY','ERR_CASH_NOT_CONFIGURED','ERR_CASH_AMOUNT'].includes(result.code)) this.selected = 0
     if (result.code === 'ERR_AUTH' || result.code === 'ERR_AUTH_REQUIRED') { this.selected = 0; this.resumeAfterLogin = true; requireCustomerLogin({ reason: 'redeem' }) }
@@ -67,7 +81,7 @@ export default {
    this.flipTimer = setTimeout(() => { this.revealed = true; if (typeof uni.vibrateShort === 'function') uni.vibrateShort({ fail: () => {} }) }, 80)
   },
   retry() { if (this.selected) this.choose(this.selected); else this.stage = 'input' },
-  again() { clearTimeout(this.flipTimer); this.code = ''; this.stage = 'input'; this.selected = 0; this.revealed = false; this.result = {}; this.tip = '' },
+  again() { clearTimeout(this.flipTimer); this.code = ''; this.stage = 'input'; this.selected = 0; this.revealed = false; this.result = {}; this.tip = ''; this.errorCode = '' },
   toDetail() { uni.navigateTo({ url: '/pages/record/detail?id=' + this.rec.id }) }
  }
 }

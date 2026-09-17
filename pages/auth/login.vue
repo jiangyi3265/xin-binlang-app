@@ -85,6 +85,9 @@
 </template>
 
 <script>
+	// #ifdef MP-WEIXIN
+	import { activityShare } from '@/utils/share.mjs'
+	// #endif
 	import store from '@/store/index.js'
 	import { grantCustomerConsent, hasCustomerConsent, revokeCustomerConsent } from '@/utils/api.js'
 	import { miniProgramContentTop } from '@/utils/navigation.mjs'
@@ -118,6 +121,9 @@
 	}
 
 	export default {
+		// #ifdef MP-WEIXIN
+		onShareAppMessage() { return activityShare() },
+		// #endif
 		data() {
 			return {
 				agreed: false,

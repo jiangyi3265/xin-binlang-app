@@ -66,6 +66,12 @@
 						<text class="entry-num">{{ left }}</text> 次 · 每日上限 {{ cfg.dailyLimit }} 次
 					</text>
 				</view>
+				<!-- #ifdef MP-WEIXIN -->
+				<button class="entry-share" open-type="share" hover-class="entry-share-pressed" aria-label="分享倌榔活动给微信好友">
+					<bl-icon name="share" :size="30" color="#102E53" :weight="1.8" />
+					<text>分享给好友</text>
+				</button>
+				<!-- #endif -->
 			</view>
 
 			<!-- 滚动播报 -->
@@ -275,10 +281,16 @@
 </template>
 
 <script>
+	// #ifdef MP-WEIXIN
+	import { activityShare } from '@/utils/share.mjs'
+	// #endif
 	import store from '@/store/index.js'
 	import { requireCustomerLogin } from '@/utils/api.js'
 
 	export default {
+		// #ifdef MP-WEIXIN
+		onShareAppMessage() { return activityShare() },
+		// #endif
 		data() {
 			return {
 				statusH: 20,
@@ -343,6 +355,28 @@
 </script>
 
 <style lang="scss" scoped>
+	.entry-share {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 12rpx;
+		width: 100%;
+		min-height: 88rpx;
+		margin-top: 20rpx;
+		padding: 12rpx 24rpx;
+		border: 1rpx solid $bl-line;
+		border-radius: $bl-r-md;
+		background: $bl-paper;
+		color: $bl-green;
+		font-size: $bl-fs-sm;
+		font-weight: 600;
+	}
+
+	.entry-share-pressed {
+		background: $bl-green-lt;
+		border-color: $bl-green-3;
+	}
+
 	.pg {
 		min-height: 100vh;
 		padding-bottom: 60rpx;

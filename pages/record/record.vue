@@ -168,10 +168,16 @@
 </template>
 
 <script>
+	// #ifdef MP-WEIXIN
+	import { activityShare } from '@/utils/share.mjs'
+	// #endif
 	import store from '@/store/index.js'
 	import { fmt, daysLeft } from '@/utils/date.js'
 
 	export default {
+		// #ifdef MP-WEIXIN
+		onShareAppMessage() { return activityShare() },
+		// #endif
 		data() {
 			return { tab: 0, filter: 'all' }
 		},

@@ -216,11 +216,17 @@
 </template>
 
 <script>
+	// #ifdef MP-WEIXIN
+	import { activityShare } from '@/utils/share.mjs'
+	// #endif
 	import store from '@/store/index.js'
 	import { fmt, countdown, daysLeft } from '@/utils/date.js'
 	const STATUS_POLL_MS = 2000
 
 	export default {
+		// #ifdef MP-WEIXIN
+		onShareAppMessage() { return activityShare() },
+		// #endif
 		data() {
 			return {
 				id: '',

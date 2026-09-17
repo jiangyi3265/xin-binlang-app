@@ -128,14 +128,20 @@ usedIcons.forEach(n => {
 /* ---------- 4. 图片与主包体积预算 ----------
    微信主包硬上限 2048KB。static/ 整个目录都进主包，曾经在这里放过
    一份 1.4MB 的图片副本，直接导致上传报“代码包大小超过限制”。
-   业务图片一律走后端 /assets/ 与 /uploads/，static/ 只留 tabBar 图标与 logo。 */
+   业务图片一律走后端 /assets/ 与 /uploads/。唯一例外是固定分享封面，
+   随包提供，避免私人凭证页面依赖截图分享；该文件单独限制为 256KB。 */
 const STATIC_BUDGET_KB = 128
 function dirSizeKb(rel) {
 	return walk(rel).reduce((sum, f) => sum + fs.statSync(path.join(ROOT, f)).size, 0) / 1024
 }
 const staticKb = dirSizeKb('static')
-if (staticKb > STATIC_BUDGET_KB) {
-	err.push('[体积] static/ 已占 ' + staticKb.toFixed(0) + 'KB，超过预算 ' + STATIC_BUDGET_KB + 'KB；业务图片请走后端 /assets/')
+const shareCover = path.join(ROOT, 'static/share/guanlang.jpg')
+const shareCoverKb = fs.existsSync(shareCover) ? fs.statSync(shareCover).size / 1024 : 0
+if (!shareCoverKb || shareCoverKb > 256) {
+	err.push('[分享] 固定分享封面缺失或超过 256KB')
+}
+if (staticKb - shareCoverKb > STATIC_BUDGET_KB) {
+	err.push('[体积] static/ 除固定分享封面外已占 ' + (staticKb - shareCoverKb).toFixed(0) + 'KB，超过预算 ' + STATIC_BUDGET_KB + 'KB；业务图片请走后端 /assets/')
 }
 if (fs.existsSync(path.join(ROOT, 'static/img'))) {
 	err.push('[体积] static/img 已废弃：图片副本会把主包顶出 2048KB 上限')

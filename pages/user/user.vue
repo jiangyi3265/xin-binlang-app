@@ -77,9 +77,15 @@
 </template>
 
 <script>
+	// #ifdef MP-WEIXIN
+	import { activityShare } from '@/utils/share.mjs'
+	// #endif
 	import store from '@/store/index.js'
 
 	export default {
+		// #ifdef MP-WEIXIN
+		onShareAppMessage() { return activityShare() },
+		// #endif
 		computed: {
 			cfg() { return store.state.config },
 			logged() { return store.isCustomerAuthenticated() },

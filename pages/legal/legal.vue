@@ -31,6 +31,9 @@
 </template>
 
 <script>
+	// #ifdef MP-WEIXIN
+	import { activityShare } from '@/utils/share.mjs'
+	// #endif
 	const DOCUMENTS = {
 		agreement: {
 			title: '用户服务协议',
@@ -59,6 +62,9 @@
 	}
 
 	export default {
+		// #ifdef MP-WEIXIN
+		onShareAppMessage() { return activityShare() },
+		// #endif
 		data() {
 			return { title: '', intro: '', sections: [] }
 		},

@@ -35,9 +35,15 @@
  </view>
 </template>
 <script>
+	// #ifdef MP-WEIXIN
+	import { activityShare } from '@/utils/share.mjs'
+	// #endif
 import store from '@/store/index.js'
 import { requireCustomerLogin } from '@/utils/api.js'
 export default {
+		// #ifdef MP-WEIXIN
+		onShareAppMessage() { return activityShare() },
+		// #endif
  data() { return { code: '', stage: 'input', selected: 0, loading: false, refreshing: false, revealed: false, tip: '', errorCode: '', result: {}, resumeAfterLogin: false, flipTimer: null } },
  computed: {
   cfg() { return store.state.config }, logged() { return store.isCustomerAuthenticated() }, rec() { return this.result.record || {} },

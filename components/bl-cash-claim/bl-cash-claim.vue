@@ -5,7 +5,7 @@
 		<text class="cash-desc">{{ description }}</text>
 		<button v-if="canClaim" class="cash-button" :disabled="busy" @tap="claim">{{ busy ? '正在处理…' : payment.state === 'WAIT_USER_CONFIRM' ? '确认微信收款' : '领取到微信零钱' }}</button>
 		<button v-if="!canClaim && record.status === 'pending'" class="cash-button" :disabled="busy" @tap="refresh(true)">刷新领取状态</button>
-		<text v-if="error" class="cash-error">{{ error }}</text>
+		<text v-if="error || payment.message" class="cash-error">{{ error || payment.message }}</text>
 		<text class="cash-note">无需门店核销 · 可返回本页继续领取</text>
 	</view>
 </template>
@@ -13,16 +13,16 @@
 import { cashStatus, claimCash } from '@/utils/cash.js'
 export default {
 	props: { record: { type: Object, required: true } }, emits: ['updated'],
-	data() { return { payment: {}, busy: false, querying: false, error: '' } },
+	data() { return { payment: {}, busy: false, querying: false, error: '', revision: 0 } },
 	computed: {
-		statusLabel() { return this.record.status === 'expired' ? '红包已失效' : this.record.status === 'frozen' ? '红包已冻结' : this.payment.label || (this.record.cashState === 'SUCCESS' ? '已到账' : '待领取') },
+		statusLabel() { return this.record.status === 'expired' ? '红包已失效' : this.record.status === 'frozen' ? '红包已冻结' : this.payment.message ? '领取暂未完成' : this.payment.label || (this.record.cashState === 'SUCCESS' ? '已到账' : '待领取') },
 		canClaim() { return this.record.status === 'pending' && this.payment.ready !== false && !['SUCCESS','FAIL','CANCELLED','REVIEW_REQUIRED','CANCELING','TRANSFERING','PROCESSING','ACCEPTED'].includes(this.payment.state) },
-		description() { if (this.record.cashState === 'SUCCESS' || this.payment.state === 'SUCCESS') return '现金已到账，请在微信零钱明细中查看。'; if (['FAIL','CANCELLED','REVIEW_REQUIRED'].includes(this.payment.state)) return '请联系客服核对领取结果，保留此凭证。'; if (this.payment.ready === false) return '现金领取暂未开放，你的中奖凭证已保留。'; return '点击领取后，按微信提示确认收款。实际到账状态以微信转账结果为准。' }
+		description() { if (this.record.cashState === 'SUCCESS' || this.payment.state === 'SUCCESS') return '现金已到账，请在微信零钱明细中查看。'; if (['FAIL','CANCELLED','REVIEW_REQUIRED'].includes(this.payment.state)) return '请联系客服核对领取结果，保留此凭证。'; if (this.payment.ready === false) return '现金领取暂未开放，你的中奖凭证已保留。'; if (this.payment.message) return '中奖凭证已保留，可在问题处理后返回这里继续领取。'; return '点击领取后，按微信提示确认收款。实际到账状态以微信转账结果为准。' }
 	},
 	mounted() { this.refresh() },
 	methods: {
-		async refresh(manual = false) { if (this.querying) return; this.querying = true; try { this.payment = await cashStatus(this.record.id); if (manual) this.error = ''; if (this.payment.state === 'SUCCESS' && this.record.cashState !== 'SUCCESS') this.$emit('updated') } catch (error) { if (manual) this.error = error.message || '暂时无法刷新，请稍后重试' } finally { this.querying = false } },
-		async claim() { if (this.busy) return; this.busy = true; this.error = ''; try { this.payment = await claimCash(this.record.id); this.$emit('updated') } catch (error) { this.error = error.message || '领取结果正在确认，请稍后刷新' } finally { this.busy = false } }
+		async refresh(manual = false) { if (this.querying || this.busy) return; this.querying = true; const revision = ++this.revision; try { const result = await cashStatus(this.record.id); if (revision !== this.revision) return; this.payment = result; if (manual || result.state === 'SUCCESS') this.error = ''; if (this.payment.state === 'SUCCESS' && this.record.cashState !== 'SUCCESS') this.$emit('updated') } catch (error) { if (manual && revision === this.revision) this.error = error.message || '暂时无法刷新，请稍后重试' } finally { this.querying = false } },
+		async claim() { if (this.busy) return; ++this.revision; this.busy = true; this.error = ''; try { this.payment = await claimCash(this.record.id); this.error = this.payment.feedback || ''; this.$emit('updated') } catch (error) { this.error = error.message || '领取结果正在确认，请稍后刷新' } finally { this.busy = false } }
 	}
 }
 </script>

@@ -62,7 +62,7 @@
 					<view class="pool-row">
 						<view v-for="pz in poolPrizes(p.id)" :key="pz.id" class="pool-p">
 							<view class="pool-img"><bl-prize-image :src="pz.img" :type="pz.type" /></view>
-							<text class="pool-pn bl-ellipsis">{{ pz.name }}</text>
+							<text class="pool-pn">{{ pz.name }}</text>
 							<text class="pool-pv bl-num">¥{{ pz.value }}</text>
 							<view v-if="pz.stock <= 0" class="pool-out"><text>已发完</text></view>
 						</view>
@@ -433,6 +433,10 @@
 
 	.pool-pn {
 		display: block;
+		white-space: normal;
+		overflow-wrap: anywhere;
+		line-height: 1.5;
+		min-height: 99rpx;
 		margin-top: 10rpx;
 		font-size: 22rpx;
 		color: $bl-ink;

@@ -41,7 +41,7 @@
 			"path": "pages/redeem/redeem",
 			"style": {
 				"navigationStyle": "custom",
-				"navigationBarTitleText": "输码兑奖"
+				"navigationBarTitleText": "购买有礼"
 			}
 		},
 		{

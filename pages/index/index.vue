@@ -164,7 +164,7 @@
 							<text>{{ poolName(p.pool) }}</text>
 						</view>
 						<view class="prz-b">
-							<text class="prz-n bl-ellipsis">{{ p.name }}</text>
+							<text class="prz-n">{{ p.name }}</text>
 							<view class="prz-v">
 								<text class="prz-v1">价值</text>
 								<text class="prz-v2 bl-num">¥{{ p.value }}</text>
@@ -898,6 +898,10 @@
 
 	.prz-n {
 		display: block;
+		white-space: normal;
+		overflow-wrap: anywhere;
+		line-height: 1.5;
+		min-height: 78rpx;
 		font-size: 26rpx;
 		font-weight: 700;
 		color: $bl-ink;

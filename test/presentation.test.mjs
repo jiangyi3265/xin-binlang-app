@@ -2,6 +2,21 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { runtime } from './helpers/client-runtime.mjs'
 
+test('late showcase updates refresh the visible store list and selected packaging', async () => {
+  const app = runtime()
+  const home = app.instance(app.load('pages/index/index.vue').default)
+  app.store.state.displayPrice = 3000
+  assert.equal(home.nearStores.length, 0)
+  assert.match(home.campaign.productImg, /product-30/)
+  app.reply('/api/public/stores', [{ id: 'local-store', short: '本地测试门店', addr: '', img: '' }])
+  app.reply('/api/public/pools', [{ id: 'local-pool', presentation: { theme: 'gold', productImg: '/uploads/custom-pack.png' } }])
+  await app.store.loadPublicShowcase()
+  assert.equal(home.nearStores.length, 1)
+  assert.match(home.campaign.productImg, /custom-pack/)
+  app.store.applyStores([])
+  assert.equal(home.nearStores.length, 0)
+})
+
 test('30 and 50 packaging, generic entry, and scan parameters remain distinct', () => {
   const app = runtime()
   const { packagingView, launchContext, rewardCard } = app.load('utils/presentation.js')

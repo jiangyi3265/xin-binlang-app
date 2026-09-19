@@ -14,9 +14,9 @@ import {
 } from '@/utils/api.js'
 
 const LEGACY_DEMO_STORAGE_KEY = 'xbl_demo_state_v1'
-const POOLS = []
+const POOLS = reactive([])
 const BATCHES = []
-const STORES = []
+const STORES = reactive([])
 const ACCOUNTS = []
 let customerSyncTask = null
 let storeSyncTask = null

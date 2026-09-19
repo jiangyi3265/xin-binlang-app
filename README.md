@@ -55,7 +55,7 @@ pnpm run build:mp-weixin
 - H5 产物：`dist/build/h5`，由后端 `H5_DIR` 指向并在 `/app/` 提供。
 - 微信小程序产物：`dist/build/mp-weixin`，导入微信开发者工具。
 - `check` 验证页面路由、图标、组件、资源体积、游客浏览、二维码结构，以及微信登录配置与顶部安全区。
-- 构建完成后的 `sync-mp-static.mjs` 确保小程序静态资源和 tabBar 图标完整。
+- 构建完成后的 `sync-static.mjs` 确保 H5 和小程序的静态资源、tabBar 图标完整。
 
 `manifest.json` 已配置微信 AppID `wx8887b61da8f2edd6`。H5 使用 `https://xbinglangs.oksja.cn/app/`，CI 和发布流程均构建至该生产 API。uni-app 的 DCloud AppID 保持待配置，仅在后续需要对应原生 App 能力时补充。微信登录配置：
 

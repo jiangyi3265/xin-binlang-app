@@ -61,7 +61,7 @@
 				<scroll-view class="pool-scroll" scroll-x show-scrollbar="false">
 					<view class="pool-row">
 						<view v-for="pz in poolPrizes(p.id)" :key="pz.id" class="pool-p">
-							<image class="pool-img" :src="pz.img" mode="aspectFill" />
+							<view class="pool-img"><bl-prize-image :src="pz.img" :type="pz.type" /></view>
 							<text class="pool-pn bl-ellipsis">{{ pz.name }}</text>
 							<text class="pool-pv bl-num">¥{{ pz.value }}</text>
 							<view v-if="pz.stock <= 0" class="pool-out"><text>已发完</text></view>
@@ -164,7 +164,7 @@
 		},
 		computed: {
 			cfg() { return store.state.config },
-			pools() { return store.POOLS }
+			pools() { return store.POOLS.filter(p => p.presentation?.visible !== false) }
 		},
 		methods: {
 			poolPrizes(id) {

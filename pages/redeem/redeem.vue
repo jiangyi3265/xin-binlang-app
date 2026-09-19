@@ -1,21 +1,22 @@
 <template>
- <view class="draw-page">
-  <view class="draw-header" :style="{ backgroundImage: 'url(' + cfg.homeBg + ')' }">
-   <bl-navbar title="幸运翻牌" bg="transparent" :fixed="false" />
+ <view class="draw-page" :class="'theme-' + campaign.theme">
+  <view class="draw-header"><image class="draw-texture" :class="{ golden: campaign.tintBackground }" :src="campaign.backgroundImg" mode="aspectFill" />
+   <bl-navbar :title="codeContext?.guaranteed ? '购买有礼 · 100%中奖' : '购买有礼'" bg="transparent" :fixed="false" />
    <view class="draw-heading"><text class="draw-kicker">{{ cfg.brand }} · 一码一礼</text><text class="draw-title">{{ activityPaused ? '活动暂未开放' : stage === 'input' ? '好礼，藏在下一张牌里' : revealed ? '你的翻牌结果' : '选一张，翻开你的好礼' }}</text><text class="draw-sub">{{ activityPaused ? '请保管好兑换码，活动开放后再来翻牌' : stage === 'input' ? '输入包装内的兑换码，开启翻牌' : '每个兑换码限翻一张，选定后不可更换' }}</text></view>
   </view>
   <view class="draw-body">
    <view v-if="stage === 'input'" class="input-panel">
-    <view class="input-product"><image :src="cfg.productImg" mode="aspectFit" /><view><text class="panel-title">包装内 6 位兑换码</text><text class="panel-note">请妥善保管包装，勿与他人共享兑换码</text></view></view>
+    <view class="input-product"><image v-if="campaign.productImg" :src="campaign.productImg" mode="aspectFit" /><view v-else class="both-packs"><image :src="pack30" mode="aspectFit" /><image :src="pack50" mode="aspectFit" /></view><view><text class="panel-title">{{ codeContext?.productTier || '包装内 6 位兑换码' }}</text><text class="panel-note">请妥善保管包装，勿与他人共享兑换码</text></view></view>
     <input class="code-input" type="text" :value="code" maxlength="6" placeholder="请输入 6 位兑换码" confirm-type="done" @input="onInput" @confirm="prepare" />
     <text v-if="tip" class="draw-error">{{ tip }}</text>
     <button v-if="activityPaused" class="action primary" :disabled="refreshing" @tap="refreshActivity">{{ refreshing ? '正在刷新…' : '刷新活动状态' }}</button>
-    <button v-else class="action primary" :disabled="code.length !== 6" @tap="prepare">开始选牌</button>
+    <button v-else class="action primary" :disabled="code.length !== 6 || previewing" @tap="prepare">{{ previewing ? '正在识别包装…' : '开始抽奖' }}</button>
     <text class="input-note">{{ activityPaused ? '已参与的开奖结果仍可在兑奖记录中查看' : logged ? '一码一次，翻牌结果自动保存' : '选牌前请先完成微信登录' }}</text>
    </view>
    <view v-else class="cards-panel">
     <view class="selection-status"><text>兑换码 {{ maskedCode }}</text><text>{{ loading ? '正在确定结果…' : revealed ? '已翻开第 ' + selected + ' 张牌' : activityPaused ? '等待活动开放' : '从下方 6 张牌中选择 1 张' }}</text></view>
-    <bl-flip-cards :brand="cfg.brand" :background="cfg.homeBg" :selected="selected" :busy="loading" :disabled="activityPaused" :revealed="revealed" :reward-type="rewardType" :title="cardTitle" :detail="cardDetail" @select="choose" />
+    <bl-flip-cards :brand="cfg.brand" :background="campaign.backgroundImg" :tint="campaign.tintBackground" :theme="campaign.theme" :previews="cardPreviews" :selected="selected" :busy="loading" :disabled="activityPaused" :revealed="revealed" :reward-type="rewardType" :title="cardTitle" :detail="cardDetail" @select="choose" />
+    <text v-if="revealed" class="preview-note">其余卡片为本奖池奖品展示，实际奖励以你选中的卡片为准。</text>
     <text v-if="tip" class="draw-error">{{ tip }}</text>
     <button v-if="activityPaused" class="action primary" :disabled="refreshing" @tap="refreshActivity">{{ refreshing ? '正在刷新…' : '刷新活动状态' }}</button>
     <button v-else-if="tip && !revealed" class="action primary" @tap="retry">{{ selected ? '查询本次翻牌结果' : '重新输入兑换码' }}</button>
@@ -39,13 +40,18 @@
 	import { activityShare } from '@/utils/share.mjs'
 	// #endif
 import store from '@/store/index.js'
-import { requireCustomerLogin } from '@/utils/api.js'
+import { requireCustomerLogin, request, publicAsset } from '@/utils/api.js'
+import { packagingView, launchContext, rewardCard } from '@/utils/presentation.js'
 export default {
 		// #ifdef MP-WEIXIN
 		onShareAppMessage() { return activityShare() },
 		// #endif
- data() { return { code: '', stage: 'input', selected: 0, loading: false, refreshing: false, revealed: false, tip: '', errorCode: '', result: {}, resumeAfterLogin: false, flipTimer: null } },
+ data() { return { codeContext: null, previewing: false, previewSequence: 0, previewTimer: null, code: '', stage: 'input', selected: 0, loading: false, refreshing: false, revealed: false, tip: '', errorCode: '', result: {}, resumeAfterLogin: false, flipTimer: null } },
  computed: {
+  campaign() { return packagingView(this.rec.presentation || this.codeContext?.presentation || {}, store.state.displayPrice) },
+  pack30() { return publicAsset('/assets/guanlang-product-30.png') },
+  pack50() { return publicAsset('/assets/guanlang-product-50.jpg') },
+  cardPreviews() { const prizes = this.codeContext?.prizes || []; return prizes.map(rewardCard) },
   cfg() { return store.state.config }, logged() { return store.isCustomerAuthenticated() }, rec() { return this.result.record || {} },
   activityPaused() { return !this.revealed && !this.selected && (this.errorCode === 'ERR_CLOSED' || (this.cfg.active === false && Boolean(this.cfg.actStart))) },
   maskedCode() { return this.code.slice(0, 2) + '••' + this.code.slice(-2) },
@@ -55,12 +61,33 @@ export default {
   resultTitle() { return this.rewardType === 'lose' ? '谢谢惠顾' : this.rewardType === 'cash' ? this.rec.prizeValue + ' 元现金红包' : this.rec.prizeName },
   resultDescription() { return this.rewardType === 'lose' ? '本次未中奖。你可以在兑奖记录中查看这次结果。' : this.rewardType === 'cash' ? '红包待领取。完成微信收款确认后，以实际转账结果为准。' : this.rewardType === 'exchange' ? '凭此奖励到合作门店补款，店员确认后领取一袋商品。' : this.rec.prizeSpec + '，请在凭证有效期内到店领取。' }
  },
- onLoad(options) { if (options?.code) this.code = String(options.code).toUpperCase().slice(0, 6) },
+ onLoad(options) { const context = launchContext(options); this.code = context.code; if (context.priceCents) store.state.displayPrice = context.priceCents },
  onShow() { if (this.resumeAfterLogin) { this.resumeAfterLogin = false; if (this.logged) this.prepare() } },
- onUnload() { clearTimeout(this.flipTimer) },
+ onUnload() { clearTimeout(this.flipTimer); clearTimeout(this.previewTimer); ++this.previewSequence },
  methods: {
-  onInput(event) { this.code = (event.detail.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); this.tip = '' },
-  prepare() { if (this.activityPaused) { this.tip = '活动暂未开放，请保管好兑换码，开放后再来'; return } if (this.code.length !== 6) { this.tip = '请输入完整的 6 位兑换码'; return } if (!this.logged) { this.resumeAfterLogin = true; requireCustomerLogin({ reason: 'redeem' }); return } this.tip = ''; this.errorCode = ''; this.stage = 'choose' },
+  onInput(event) {
+   this.code = (event.detail.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); this.tip = ''; this.codeContext = null
+   ++this.previewSequence; clearTimeout(this.previewTimer); this.previewing = false
+   if (this.code.length === 6 && this.logged) this.previewTimer = setTimeout(() => this.loadCodePresentation(false), 400)
+  },
+  async loadCodePresentation(showError = true) {
+   const code = this.code, session = store.state.customerToken, sequence = ++this.previewSequence; this.previewing = true
+   try {
+    const context = await request('/customer/draw/preview', { method: 'POST', data: { code } }, store.state.customerToken)
+    if (sequence !== this.previewSequence || code !== this.code || session !== store.state.customerToken || !this.logged) return false
+    this.codeContext = context; store.state.displayPrice = [3000, 5000].includes(context.priceCents) ? context.priceCents : 0
+    return true
+   } catch (error) { if (showError && sequence === this.previewSequence) { this.tip = error.message || '暂时无法识别兑换码，请稍后重试'; this.errorCode = error.code || '' } return false }
+   finally { if (sequence === this.previewSequence) this.previewing = false }
+  },
+  async prepare() {
+   if (this.activityPaused) { this.tip = '活动暂未开放，请保管好兑换码，开放后再来'; return }
+   if (this.code.length !== 6) { this.tip = '请输入完整的 6 位兑换码'; return }
+   if (!this.logged) { this.resumeAfterLogin = true; requireCustomerLogin({ reason: 'redeem' }); return }
+   if (this.previewing) return
+   clearTimeout(this.previewTimer); this.tip = ''; this.errorCode = ''
+   if (await this.loadCodePresentation()) this.stage = 'choose'
+  },
   async refreshActivity() {
    if (this.refreshing) return
    this.refreshing = true
@@ -87,11 +114,13 @@ export default {
    this.flipTimer = setTimeout(() => { this.revealed = true; if (typeof uni.vibrateShort === 'function') uni.vibrateShort({ fail: () => {} }) }, 80)
   },
   retry() { if (this.selected) this.choose(this.selected); else this.stage = 'input' },
-  again() { clearTimeout(this.flipTimer); this.code = ''; this.stage = 'input'; this.selected = 0; this.revealed = false; this.result = {}; this.tip = ''; this.errorCode = '' },
+  again() { clearTimeout(this.flipTimer); clearTimeout(this.previewTimer); ++this.previewSequence; this.codeContext = null; this.code = ''; this.stage = 'input'; this.selected = 0; this.revealed = false; this.result = {}; this.tip = ''; this.errorCode = '' },
   toDetail() { uni.navigateTo({ url: '/pages/record/detail?id=' + this.rec.id }) }
  }
 }
 </script>
 <style lang="scss" scoped>
+.draw-header{position:relative;overflow:hidden}.draw-texture{position:absolute;inset:0;width:100%;height:100%}.draw-heading{position:relative}.golden{filter:sepia(1) saturate(1.1) hue-rotate(345deg);opacity:.7}.theme-gold .draw-header,.theme-gold .primary{background-color:#482719}.theme-gold .draw-sub{color:#efdbb8}.both-packs{display:flex!important;flex-direction:row!important;gap:0!important}.both-packs image{width:72rpx;height:120rpx}.preview-note{display:block;font-size:21rpx;line-height:1.6;color:#60768c;margin-top:20rpx}
+
 .draw-page{min-height:100vh;background:$bl-paper;padding-bottom:60rpx}.draw-header{background-color:$bl-green;background-size:cover;background-position:center;color:#fff;padding-bottom:76rpx}.draw-heading{padding:18rpx 32rpx 20rpx;display:flex;flex-direction:column}.draw-kicker{color:$bl-gold-3;font-size:24rpx;letter-spacing:3rpx}.draw-title{font-size:42rpx;line-height:1.4;font-weight:800;margin-top:15rpx}.draw-sub{font-size:24rpx;color:#c1d3e5;margin-top:12rpx}.draw-body{margin:-38rpx 28rpx 0;position:relative}.input-panel,.cards-panel{padding:28rpx;background:$bl-card;border:1rpx solid $bl-line;border-radius:24rpx}.input-product{display:flex;align-items:center;gap:22rpx;margin-bottom:26rpx}.input-product image{width:104rpx;height:146rpx;flex-shrink:0}.input-product>view{display:flex;flex-direction:column;gap:12rpx}.panel-title{font-size:30rpx;font-weight:700;color:$bl-ink}.panel-note{font-size:23rpx;line-height:1.7;color:$bl-ink-3}.code-input{height:100rpx;padding:0 24rpx;background:#f3f7fb;border:2rpx solid #bbcbda;border-radius:14rpx;font-size:30rpx;letter-spacing:4rpx;color:$bl-ink}.action{display:flex;align-items:center;justify-content:center;width:100%;min-height:88rpx;margin-top:22rpx;border-radius:14rpx;font-size:28rpx;font-weight:700;line-height:1.5;padding:16rpx 20rpx;box-sizing:border-box}.action:after{border:0}.primary{background:$bl-green;color:#fff}.primary[disabled]{background:#d9e3ed;color:#60768c}.secondary{background:#f0f4f8;color:$bl-ink;border:1rpx solid $bl-line}.input-note{display:block;text-align:center;font-size:22rpx;color:$bl-ink-3;margin-top:20rpx}.selection-status{display:flex;justify-content:space-between;font-size:21rpx;color:$bl-ink-3;margin-bottom:26rpx;gap:10rpx}.draw-error{display:block;margin-top:20rpx;color:$bl-danger;font-size:25rpx;line-height:1.7}.edit-code{margin:28rpx auto 0;color:$bl-ink-2;background:transparent;font-size:24rpx}.edit-code:after{border:0}.draw-result{margin-top:30rpx;padding-top:30rpx;border-top:1rpx solid $bl-line;display:flex;flex-direction:column}.result-eyebrow{color:$bl-gold;font-size:22rpx}.result-title{font-size:36rpx;font-weight:800;color:$bl-ink;margin:10rpx 0 14rpx}.result-desc{font-size:25rpx;line-height:1.7;color:$bl-ink-2}.result-foot{font-size:21rpx;color:$bl-ink-3;line-height:1.7;margin-top:20rpx;text-align:center}.exchange-summary{display:flex;gap:20rpx;padding:24rpx 0}.exchange-summary>view{display:flex;flex:1;flex-direction:column;gap:10rpx;font-size:22rpx;color:$bl-ink-3}.exchange-summary .amount{font-size:32rpx;color:$bl-gold;font-weight:700}.reward-guide{padding:32rpx 14rpx}.guide-title{font-size:28rpx;font-weight:700;color:$bl-ink}.reward-guide>view{display:flex;gap:20rpx;margin-top:24rpx;font-size:25rpx;color:$bl-ink}.reward-guide>view>view{display:flex;flex-direction:column;gap:8rpx}.guide-no{font-size:22rpx;color:$bl-gold;font-weight:700}.guide-desc{font-size:23rpx;color:$bl-ink-3;line-height:1.7}
 </style>

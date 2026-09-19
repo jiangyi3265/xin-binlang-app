@@ -1,17 +1,18 @@
 <template>
-	<view class="flip-grid" :class="{ 'has-selection': selected > 0 }">
-		<button v-for="card in 6" :key="card" class="flip-card" :class="{ selected: selected === card, revealed: revealed && selected === card, muted: selected > 0 && selected !== card }"
-			:disabled="disabled || busy || selected > 0" role="button" :aria-label="disabled ? '活动暂未开放' : revealed && selected === card ? title + '，' + detail : '选择第 ' + card + ' 张牌'" @tap="$emit('select', card)">
+	<view class="flip-grid" :class="{ 'has-selection': selected > 0, 'theme-gold': theme === 'gold' }">
+		<button v-for="card in 6" :key="card" class="flip-card" :class="{ selected: selected === card, revealed: revealed, muted: selected > 0 && selected !== card, preview: revealed && selected !== card }"
+			:disabled="disabled || busy || selected > 0" role="button" :aria-label="disabled ? '活动暂未开放' : revealed ? (selected === card ? title + '，' + detail : '奖池展示：' + previewFor(card).title) : '选择第 ' + card + ' 张牌'" @tap="$emit('select', card)">
 			<view class="flip-inner">
-				<view class="flip-face flip-back" :aria-hidden="revealed && selected === card" :style="background ? { backgroundImage: 'url(' + background + ')' } : {}">
-					<view class="flip-border"></view><text class="flip-brand">{{ brand }}</text><text class="flip-en">GUANLANG</text>
+				<view class="flip-face flip-back" :aria-hidden="revealed">
+					<view class="flip-texture" :class="{ golden: tint }" :style="background ? { backgroundImage: 'url(' + background + ')' } : {}"></view><view class="flip-border"></view><text class="flip-brand">{{ brand }}</text><text class="flip-en">GUANLANG</text>
 					<view class="flip-mark">礼</view><text class="flip-prompt">{{ disabled ? '暂未开放' : busy && selected === card ? '正在开奖' : '选我翻牌' }}</text>
 				</view>
-				<view class="flip-face flip-front" :aria-hidden="!revealed || selected !== card" :class="'reward-' + rewardType">
+				<view class="flip-face flip-front" :aria-hidden="!revealed" :class="'reward-' + rewardType">
 					<template v-if="selected === card">
 					<text class="flip-result-kicker">{{ rewardType === 'lose' ? '感谢参与' : '你的奖励' }}</text>
 					<text class="flip-result-title">{{ title }}</text><text class="flip-result-detail">{{ detail }}</text>
 					</template>
+                    <template v-else-if="revealed"><text class="flip-result-kicker">奖池展示</text><text class="flip-result-title">{{ previewFor(card).title }}</text><text class="flip-result-detail">{{ previewFor(card).detail }}</text></template>
 				</view>
 			</view>
 		</button>
@@ -21,12 +22,15 @@
 <script>
 export default {
 	emits: ['select'],
-	props: { brand: { type: String, default: '倌榔' }, background: String, selected: { type: Number, default: 0 }, busy: Boolean, disabled: Boolean, revealed: Boolean,
+	methods: { previewFor(card) { return this.previews.length ? this.previews[(card - 1) % this.previews.length] : { title: '活动好礼', detail: '以奖池配置为准' } } },
+	props: { previews: { type: Array, default: () => [] }, theme: String, tint: Boolean, brand: { type: String, default: '倌榔' }, background: String, selected: { type: Number, default: 0 }, busy: Boolean, disabled: Boolean, revealed: Boolean,
 		rewardType: { type: String, default: 'lose' }, title: String, detail: String }
 }
 </script>
 
 <style lang="scss" scoped>
+.flip-texture{position:absolute;inset:0;background-size:auto 100%;background-position:center;opacity:.8}.golden{filter:sepia(1) saturate(1.1) hue-rotate(345deg)}.theme-gold .flip-back{background-color:#482719}.flip-back>text,.flip-mark{position:relative}.flip-card.preview{opacity:1;transform:scale(.96)}.preview .flip-front{background:#f0f4f8;border-color:#bdcbd8}.preview .flip-result-title{font-size:28rpx;color:#60768c}.preview .flip-result-detail{color:#60768c}
+
 .flip-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18rpx}
 .flip-card{display:block;position:relative;padding:0;margin:0;width:100%;height:260rpx;border:0;border-radius:18rpx;background:transparent;overflow:visible;perspective:1000px;line-height:1.4;transition:opacity .25s,transform .25s}
 .flip-card::after{border:0}.flip-card[disabled]{color:inherit;opacity:1}.flip-card.muted{opacity:.38;transform:scale(.96)}
@@ -42,4 +46,5 @@ export default {
 .flip-result-kicker{font-size:19rpx;color:#60768c}.flip-result-title{font-size:34rpx;line-height:1.2;font-weight:800;margin:16rpx 0 12rpx;overflow-wrap:anywhere}
 .flip-result-detail{font-size:21rpx;line-height:1.5;color:#94692b}.reward-lose{background:#f7f9fc;border-color:#bbcbda}.reward-lose .flip-result-title{font-size:30rpx}.reward-cash{background:#fff7e7}
 @media(prefers-reduced-motion:reduce){.flip-inner,.flip-card{transition:none}}
+.flip-card.preview{opacity:1}
 </style>

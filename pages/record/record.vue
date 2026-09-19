@@ -97,7 +97,7 @@
 
 				<view v-for="r in prizeList" :key="r.id" class="pz bl-card" @tap="open(r)">
 					<view class="pz-top">
-						<image class="pz-img" :src="r.prizeImg" mode="aspectFill" />
+						<view class="pz-img"><bl-prize-image :src="r.prizeImg" :type="r.prizeType" /></view>
 						<view class="pz-txt">
 							<view class="pz-r1">
 								<text class="pz-n bl-ellipsis">{{ r.prizeName }}</text>

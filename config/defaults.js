@@ -2,7 +2,7 @@ const CONFIG = {
 	brand: '倌榔',
 	brandEn: 'GUANLANG',
 	brandMark: '倌',
-	brandLogo: '',
+	brandLogo: '/assets/guanlang-wordmark.png',
 	adminSubtitle: '总部运营中枢',
 	actName: '开码有礼',
 	actSub: '一码一兑 · 全程可追溯',

@@ -6,9 +6,9 @@
 			<view class="cover-content" :style="coverStyle">
 				<view class="brand-row">
 					<view class="brand">
-						<image v-if="cfg.brandLogo" class="brand-seal brand-seal-logo" :src="cfg.brandLogo" mode="aspectFill" />
+						<image v-if="cfg.brandLogo" class="wordmark" :src="cfg.brandLogo" mode="aspectFit" />
 						<view v-else class="brand-seal">{{ cfg.brandMark }}</view>
-						<view class="brand-copy">
+						<view v-if="!cfg.brandLogo" class="brand-copy">
 							<text class="brand-name">{{ cfg.brand }}</text>
 							<text class="brand-en">{{ cfg.brandEn }}</text>
 						</view>
@@ -202,6 +202,7 @@
 </script>
 
 <style lang="scss" scoped>
+.wordmark{width:200rpx;height:106rpx}
 	.login-page {
 		min-height: 100vh;
 		background: $bl-green-ink;

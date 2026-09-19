@@ -1,7 +1,7 @@
 <template>
-	<view class="pg">
+	<view class="pg" :class="'theme-' + campaign.theme">
 		<view class="top-bg-wrap">
-			<image class="top-bg" :src="cfg.ruleBg" mode="aspectFill" />
+			<image class="top-bg" :class="{ 'gold-texture': campaign.tintBackground }" :src="campaign.backgroundImg" mode="aspectFill" />
 			<view class="top-mask"></view>
 		</view>
 
@@ -14,7 +14,7 @@
 			<view class="tk">
 				<!-- 上半：奖品 -->
 				<view class="tk-a">
-					<image class="tk-img" :src="rec.prizeImg" mode="aspectFill" />
+					<view class="tk-img"><bl-prize-image :src="rec.prizeImg" :type="rec.prizeType" /></view>
 					<view class="tk-txt">
 						<view class="tk-lv">{{ rec.prizeLevel }} · {{ poolName }}</view>
 						<text class="tk-n">{{ rec.prizeName }}</text>
@@ -161,7 +161,7 @@
 				</view>
 				<view class="bl-kv">
 					<text class="bl-kv-k">所属批次</text>
-					<text class="bl-kv-v">{{ rec.batchId }}（{{ rec.price }} 元档）</text>
+					<text class="bl-kv-v">{{ rec.batchName || rec.batchId }}{{ rec.price > 0 ? `（${rec.price} 元档）` : '' }}</text>
 				</view>
 				<view class="bl-kv">
 					<text class="bl-kv-k">对应奖池</text>
@@ -220,6 +220,7 @@
 	import { activityShare } from '@/utils/share.mjs'
 	// #endif
 	import store from '@/store/index.js'
+	import { packagingView } from '@/utils/presentation.js'
 	import { fmt, countdown, daysLeft } from '@/utils/date.js'
 	const STATUS_POLL_MS = 2000
 
@@ -243,6 +244,7 @@
 			}
 		},
 		computed: {
+			campaign() { return packagingView(this.rec?.presentation, Number(this.rec?.price || 0) * 100) },
 			cfg() { return store.state.config },
 			stores() { return store.STORES },
 			logged() { return store.isCustomerAuthenticated() },
@@ -397,6 +399,8 @@
 		bottom: 0;
 		background: linear-gradient(180deg, rgba(9, 31, 59, 0.88) 0%, rgba(16, 46, 83, 0.9) 55%, $bl-paper 100%);
 	}
+	.gold-texture { filter: sepia(1) saturate(1.1) hue-rotate(345deg); }
+	.theme-gold .top-mask { background: linear-gradient(180deg, rgba(54, 32, 20, .78), rgba(72, 39, 25, .8) 55%, $bl-paper); }
 
 	/* ============ 凭证 ============ */
 	.tk {

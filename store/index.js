@@ -45,6 +45,7 @@ function mapCustomer(user = {}) {
 }
 
 const state = reactive({
+	displayPrice: 0,
 	config: {
 		...clone(CONFIG),
 		brandLogo: publicAsset(CONFIG.brandLogo),
@@ -237,7 +238,7 @@ const store = {
 	applyPools(pools) {
 		if (!Array.isArray(pools)) return
 		const colors = ['#94692B', '#4376AB', '#2F6D8C']
-		const rows = pools.map((pool, index) => ({ ...pool, tag: pool.tier, color: colors[index % colors.length] }))
+		const rows = pools.map((pool, index) => ({ ...pool, tag: pool.tier, color: pool.presentation?.theme === 'gold' ? '#94692B' : pool.presentation?.theme === 'blue' ? '#4376AB' : colors[index % colors.length] }))
 		POOLS.splice(0, POOLS.length, ...rows)
 	},
 

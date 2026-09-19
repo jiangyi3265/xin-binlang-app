@@ -1,17 +1,17 @@
 <template>
-	<view class="pg bl-paper-tex">
+	<view class="pg bl-paper-tex" :class="'theme-' + campaign.theme">
 		<!-- ============ 顶部主视觉 ============ -->
 		<view class="hero">
-			<image class="hero-bg" :src="cfg.homeBg" mode="aspectFill" />
+			<image class="hero-bg" :class="{ golden: campaign.tintBackground }" :src="campaign.backgroundImg" mode="aspectFill" />
 			<view class="hero-mask"></view>
 
 			<view class="hero-in" :style="'padding-top:' + (statusH + 16) + 'px'">
 				<!-- 品牌行 -->
 				<view class="brand">
 					<view class="brand-l">
-						<image v-if="cfg.brandLogo" class="seal seal-logo" :src="cfg.brandLogo" mode="aspectFill" />
+						<image v-if="cfg.brandLogo" class="wordmark" :src="cfg.brandLogo" mode="aspectFit" />
 						<view v-else class="seal"><text>{{ cfg.brandMark }}</text></view>
-						<view>
+						<view v-if="!cfg.brandLogo">
 							<view class="brand-n">{{ cfg.brand }}</view>
 							<view class="brand-e">{{ cfg.brandEn }}</view>
 						</view>
@@ -44,8 +44,9 @@
 		<!-- ============ 兑奖入口卡 ============ -->
 		<view class="bl-wrap">
 			<view class="entry">
+				<view class="pack-switch"><button :class="{ active: displayPrice === 3000 }" @tap="selectPack(3000)">30 元 · 棕金装</button><button :class="{ active: displayPrice === 5000 }" @tap="selectPack(5000)">50 元 · 深蓝装</button></view>
 				<view class="entry-top">
-					<image class="entry-img" :src="cfg.productImg" mode="aspectFit" />
+					<image v-if="campaign.productImg" class="entry-img" :src="campaign.productImg" mode="aspectFit" /><view v-else class="entry-packs"><image v-for="product in productLine" :key="product.price" :src="product.img" mode="aspectFit" /></view>
 					<view class="entry-txt">
 						<view class="entry-t1">撕开包装，输入 6 位数字码</view>
 						<view class="entry-t2">{{ cfg.slogan }}</view>
@@ -158,7 +159,7 @@
 			<scroll-view class="prz" scroll-x show-scrollbar="false">
 				<view class="prz-row">
 					<view v-for="p in topPrizes" :key="p.id" class="prz-i">
-						<image class="prz-img" :src="p.img" mode="aspectFill" />
+						<view class="prz-img"><bl-prize-image :src="p.img" :type="p.type" /></view>
 						<view class="prz-tag" :style="'background:' + poolColor(p.pool)">
 							<text>{{ poolName(p.pool) }}</text>
 						</view>
@@ -286,6 +287,7 @@
 	// #endif
 	import store from '@/store/index.js'
 	import { requireCustomerLogin } from '@/utils/api.js'
+	import { packagingView, launchContext } from '@/utils/presentation.js'
 
 	export default {
 		// #ifdef MP-WEIXIN
@@ -299,10 +301,16 @@
 		},
 		computed: {
 			cfg() { return store.state.config },
+            displayPrice() { return store.state.displayPrice },
+            campaign() { const theme = this.displayPrice === 3000 ? 'gold' : this.displayPrice === 5000 ? 'blue' : 'neutral'; const pool = store.POOLS.find(p => p.presentation?.visible !== false && p.presentation?.theme === theme); return packagingView(pool?.presentation || {}, this.displayPrice) },
 			logged() { return store.isCustomerAuthenticated() },
 			productLine() {
 				const variants = [{ price: '30 元', label: '棕金装', tone: 'gold' }, { price: '50 元', label: '深蓝装', tone: 'blue' }]
-				return (this.cfg.sceneImgs || []).slice(0, 2).map((img, index) => ({ img, ...variants[index] }))
+				return variants.map((variant, index) => {
+					const pool = store.POOLS.find(p => p.presentation?.visible !== false && p.presentation?.theme === variant.tone)
+					const display = packagingView(pool?.presentation, index === 0 ? 3000 : 5000)
+					return { ...variant, img: pool?.presentation?.productImg ? display.productImg : this.cfg.sceneImgs?.[index] || display.productImg }
+				})
 			},
 			user() { return store.state.user },
 			stores() { return store.STORES },
@@ -322,10 +330,13 @@
 					: '总部业务服务已连接 · 登录后同步个人兑奖数据'
 			},
 			topPrizes() {
-				return store.state.prizes.filter(p => p.on).slice(0, 8)
+				return store.state.prizes.filter(p => p.on && store.poolById(p.pool)?.presentation?.visible !== false && (!this.displayPrice || store.poolById(p.pool)?.presentation?.theme === this.campaign.theme)).slice(0, 8)
 			}
 		},
-		onLoad() {
+		onLoad(options) {
+            const context = launchContext(options)
+            if (context.priceCents) store.state.displayPrice = context.priceCents
+            if (context.code) uni.navigateTo({ url: '/pages/redeem/redeem?code=' + context.code + (context.priceCents ? '&tier=' + context.priceCents / 100 : '') })
 			try {
 				this.statusH = uni.getSystemInfoSync().statusBarHeight || 20
 			} catch (e) {}
@@ -339,6 +350,7 @@
 			store.syncActive().catch(() => {})
 		},
 		methods: {
+            selectPack(price) { store.state.displayPrice = price },
 			go(url) { uni.navigateTo({ url }) },
 			login() { requireCustomerLogin() },
 			goTab(url) { uni.switchTab({ url }) },
@@ -355,6 +367,8 @@
 </script>
 
 <style lang="scss" scoped>
+.wordmark{width:200rpx;height:106rpx}.golden{filter:sepia(1) saturate(1.1) hue-rotate(345deg);opacity:.8}.pack-switch{display:flex;gap:12rpx;margin-bottom:24rpx}.pack-switch button{flex:1;font-size:24rpx;padding:10rpx 6rpx;border-radius:12rpx;line-height:1.7;background:#f0f4f8;color:#60768c;border:1rpx solid #d3dde6}.pack-switch button:after{border:0}.pack-switch button.active{background:#e6eef8;color:#102e53;border-color:#4376ab}.theme-gold .pack-switch button.active{background:#f5e8d2;color:#68421f;border-color:#bb8f43}.entry-packs{display:flex;flex-shrink:0;margin-right:20rpx}.entry-packs image{width:64rpx;height:130rpx}.theme-gold .hero{background:#482719}.theme-gold .hero-mask{background:linear-gradient(180deg,rgba(55,28,17,.15),rgba(55,28,17,.7))}
+
 	.entry-share {
 		display: flex;
 		align-items: center;

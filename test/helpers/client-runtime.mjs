@@ -40,6 +40,7 @@ export function runtime(options = {}) {
         : path === '/api/store/orders' || path === '/api/store/logs' ? { items: [] }
         : path === '/api/customer/auth/wechat' ? { token: 'unit-test-session-' + loginCount, user: { id: 'test-customer' } }
         : path === '/api/customer/bootstrap' ? { user: { id: 'test-customer' }, config: {}, stores: [], pools: [], prizes: [] }
+        : path === '/api/customer/draw/preview' ? { priceCents: 0, presentation: { theme: 'neutral' }, prizes: [] }
         : path === '/api/public/config' ? {} : []
       options.success({ statusCode: 200, data: { ok: true, data } })
     }
@@ -80,6 +81,6 @@ export function runtime(options = {}) {
     get loginNavigations() { return loginNavigations },
     fail(value) { failure = value },
     hold(path) { held = { path }; return () => held.options },
-    async signIn() { login.agreed = true; await login.submit() }
+    async signIn() { login.agreed = true; await login.submit(); await new Promise(resolve => setImmediate(resolve)) }
   }
 }

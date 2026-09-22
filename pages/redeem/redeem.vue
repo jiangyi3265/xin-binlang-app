@@ -15,8 +15,8 @@
    </view>
    <view v-else class="cards-panel">
     <view class="selection-status"><text>兑换码 {{ maskedCode }}</text><text>{{ loading ? '正在确定结果…' : revealed ? '已翻开第 ' + selected + ' 张牌' : activityPaused ? '等待活动开放' : '从下方 6 张牌中选择 1 张' }}</text></view>
-    <bl-flip-cards :brand="cfg.brand" :background="campaign.backgroundImg" :tint="campaign.tintBackground" :theme="campaign.theme" :previews="cardPreviews" :selected="selected" :busy="loading" :disabled="activityPaused" :revealed="revealed" :reward-type="rewardType" :title="cardTitle" :detail="cardDetail" @select="choose" />
-    <text v-if="revealed" class="preview-note">其余卡片为本奖池奖品展示，实际奖励以你选中的卡片为准。</text>
+    <bl-flip-cards :brand="cfg.brand" :background="campaign.backgroundImg" :tint="campaign.tintBackground" :theme="campaign.theme" :previews="cardPreviews" :preview-order="previewOrder" :selected="selected" :busy="loading" :disabled="activityPaused" :revealed="revealed" :reward-type="rewardType" :title="cardTitle" :detail="cardDetail" @select="choose" />
+    <text v-if="revealed" class="preview-note">其余卡片仅展示活动已配置奖项，实际奖励以你选中的卡片为准。</text>
     <text v-if="tip" class="draw-error">{{ tip }}</text>
     <button v-if="activityPaused" class="action primary" :disabled="refreshing" @tap="refreshActivity">{{ refreshing ? '正在刷新…' : '刷新活动状态' }}</button>
     <button v-else-if="tip && !revealed" class="action primary" @tap="retry">{{ selected ? '查询本次翻牌结果' : '重新输入兑换码' }}</button>
@@ -41,17 +41,31 @@
 	// #endif
 import store from '@/store/index.js'
 import { requireCustomerLogin, request, publicAsset } from '@/utils/api.js'
-import { packagingView, launchContext, rewardCard } from '@/utils/presentation.js'
+import { packagingView, launchContext, otherRewardCards } from '@/utils/presentation.js'
 export default {
 		// #ifdef MP-WEIXIN
 		onShareAppMessage() { return activityShare() },
 		// #endif
- data() { return { codeContext: null, previewing: false, previewSequence: 0, previewTimer: null, code: '', stage: 'input', selected: 0, loading: false, refreshing: false, revealed: false, tip: '', errorCode: '', result: {}, resumeAfterLogin: false, flipTimer: null } },
+ data() { return { codeContext: null, previewing: false, previewSequence: 0, previewTimer: null, code: '', stage: 'input', selected: 0, loading: false, refreshing: false, revealed: false, previewOrder: [], tip: '', errorCode: '', result: {}, resumeAfterLogin: false, flipTimer: null } },
  computed: {
   campaign() { return packagingView(this.rec.presentation || this.codeContext?.presentation || {}, store.state.displayPrice) },
   pack30() { return publicAsset('/assets/guanlang-product-30.png') },
   pack50() { return publicAsset('/assets/guanlang-product-50.jpg') },
-  cardPreviews() { const prizes = this.codeContext?.prizes || []; return prizes.map(rewardCard) },
+  cardPreviews() {
+   const context = this.codeContext || {}
+   const configured = Array.isArray(context.displayPrizes) ? context.displayPrizes : null
+   if (configured) {
+    // An explicit empty list means the server intentionally has no showcase
+    // candidates. If the selected real prize was sampled, use other real pool
+    // prizes only to fill an otherwise short set of cosmetic cards; this does
+    // not bring display-only prizes back into the draw.
+    if (!configured.length) return []
+    const cards = otherRewardCards(configured, this.rec)
+    if (cards.length >= 5 || !Array.isArray(context.prizes) || !context.prizes.length) return cards.slice(0, 5)
+    return otherRewardCards([...configured, ...context.prizes], this.rec).slice(0, 5)
+   }
+   return otherRewardCards(context.prizes || [], this.rec).slice(0, 5)
+  },
   cfg() { return store.state.config }, logged() { return store.isCustomerAuthenticated() }, rec() { return this.result.record || {} },
   activityPaused() { return !this.revealed && !this.selected && (this.errorCode === 'ERR_CLOSED' || (this.cfg.active === false && Boolean(this.cfg.actStart))) },
   maskedCode() { return this.code.slice(0, 2) + '••' + this.code.slice(-2) },
@@ -65,8 +79,8 @@ export default {
  onShow() { if (this.resumeAfterLogin) { this.resumeAfterLogin = false; if (this.logged) this.prepare() } },
  onUnload() { clearTimeout(this.flipTimer); clearTimeout(this.previewTimer); ++this.previewSequence },
  methods: {
-  onInput(event) {
-   this.code = (event.detail.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); this.tip = ''; this.codeContext = null
+ onInput(event) {
+   this.code = (event.detail.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); this.tip = ''; this.codeContext = null; this.previewOrder = []
    ++this.previewSequence; clearTimeout(this.previewTimer); this.previewing = false
    if (this.code.length === 6 && this.logged) this.previewTimer = setTimeout(() => this.loadCodePresentation(false), 400)
   },
@@ -74,6 +88,13 @@ export default {
    const code = this.code, session = store.state.customerToken, sequence = ++this.previewSequence; this.previewing = true
    try {
     const context = await request('/customer/draw/preview', { method: 'POST', data: { code } }, store.state.customerToken)
+    if (sequence !== this.previewSequence || code !== this.code || session !== store.state.customerToken || !this.logged) return false
+    // Older servers return only the code pool. Supplement with their public
+    // configured prizes so a client update does not depend on a server rollout.
+    if (!Array.isArray(context.displayPrizes)) {
+     const publicPrizes = await request('/public/prizes').catch(() => [])
+     context.displayPrizes = [...(context.prizes || []), ...(Array.isArray(publicPrizes) ? publicPrizes : [])]
+    }
     if (sequence !== this.previewSequence || code !== this.code || session !== store.state.customerToken || !this.logged) return false
     this.codeContext = context; store.state.displayPrice = [3000, 5000].includes(context.priceCents) ? context.priceCents : 0
     return true
@@ -99,7 +120,7 @@ export default {
    finally { this.refreshing = false }
   },
   async choose(card) {
-   if (this.activityPaused || this.loading || this.revealed || (this.selected && this.selected !== card)) return
+   if (this.activityPaused || this.loading || this.revealed || this.result.record || (this.selected && this.selected !== card)) return
    this.selected = card; this.loading = true; this.tip = ''; this.errorCode = ''
    const result = await store.redeem(this.code, card)
    this.loading = false
@@ -111,10 +132,25 @@ export default {
     return
    }
    this.result = result; this.selected = result.record.selectedCard || card
+   this.previewOrder = this.randomPreviewOrder(this.selected, this.cardPreviews.length)
    this.flipTimer = setTimeout(() => { this.revealed = true; if (typeof uni.vibrateShort === 'function') uni.vibrateShort({ fail: () => {} }) }, 80)
   },
   retry() { if (this.selected) this.choose(this.selected); else this.stage = 'input' },
-  again() { clearTimeout(this.flipTimer); clearTimeout(this.previewTimer); ++this.previewSequence; this.codeContext = null; this.code = ''; this.stage = 'input'; this.selected = 0; this.revealed = false; this.result = {}; this.tip = ''; this.errorCode = '' },
+  randomPreviewOrder(selected, count) {
+   // Map each of the five non-selected positions to a shuffled showcase
+   // index. The map is created once per draw and survives reactive renders.
+   const positions = [1, 2, 3, 4, 5, 6].filter(card => card !== selected)
+   const indices = Array.from({ length: Math.min(5, Math.max(0, count)) }, (_, index) => index)
+   for (let index = indices.length - 1; index > 0; index--) {
+   const swap = Math.floor(Math.random() * (index + 1))
+    const value = indices[index]; indices[index] = indices[swap]; indices[swap] = value
+   }
+   const order = Array(6).fill(null)
+   if (!indices.length) return order
+   positions.forEach((position, index) => { order[position - 1] = indices[index % indices.length] })
+   return order
+  },
+  again() { clearTimeout(this.flipTimer); clearTimeout(this.previewTimer); ++this.previewSequence; this.codeContext = null; this.code = ''; this.stage = 'input'; this.selected = 0; this.revealed = false; this.previewOrder = []; this.result = {}; this.tip = ''; this.errorCode = '' },
   toDetail() { uni.navigateTo({ url: '/pages/record/detail?id=' + this.rec.id }) }
  }
 }

@@ -19,5 +19,26 @@ export function launchContext(options = {}) {
 
 export function rewardCard(prize = {}) {
   return { title: prize.type === 'cash' ? '¥' + prize.value : prize.type === 'exchange' ? '加 ¥' + prize.exchangeAmount : prize.name,
-    detail: prize.type === 'cash' ? '现金红包' : prize.type === 'exchange' ? '换购 ¥' + prize.value + ' 商品' : prize.spec || '实物奖品' }
+    detail: prize.type === 'cash' ? '现金红包' : prize.type === 'exchange' ? prize.name || '换购 ¥' + prize.value + ' 商品' : prize.spec || '实物奖品' }
+}
+
+export function otherRewardCards(prizes = [], record = {}) {
+  const keyFor = (prize, card) => JSON.stringify([prize.type, card.title, card.detail])
+  const seen = new Set()
+  if (record.win) {
+    const won = { type: record.prizeType, value: record.prizeValue, exchangeAmount: record.exchangeAmount, name: record.prizeName, spec: record.prizeSpec }
+    seen.add(keyFor(won, rewardCard(won)))
+  }
+  return prizes.flatMap(prize => {
+    // Newer preview APIs may return showcase metadata. A zero/negative
+    // showcase weight is an explicit opt-out; older payloads omit it and
+    // continue to use the default equal-display behavior.
+    const showcaseWeight = prize && prize.showcaseWeight == null ? 1 : Number(prize?.showcaseWeight)
+    if (Number.isFinite(showcaseWeight) && showcaseWeight <= 0) return []
+    if (record.win && record.prizeId && prize.id === record.prizeId) return []
+    const card = rewardCard(prize), key = keyFor(prize, card)
+    if (seen.has(key)) return []
+    seen.add(key)
+    return [card]
+  })
 }

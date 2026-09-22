@@ -1,7 +1,7 @@
 <template>
 	<view class="flip-grid" :class="{ 'has-selection': selected > 0, 'theme-gold': theme === 'gold' }">
 		<button v-for="card in 6" :key="card" class="flip-card" :class="{ selected: selected === card, revealed: revealed, muted: selected > 0 && selected !== card, preview: revealed && selected !== card }"
-			:disabled="disabled || busy || selected > 0" role="button" :aria-label="disabled ? '活动暂未开放' : revealed ? (selected === card ? title + '，' + detail : '奖池展示：' + previewFor(card).title) : '选择第 ' + card + ' 张牌'" @tap="$emit('select', card)">
+			:disabled="disabled || busy || selected > 0" role="button" :aria-label="disabled ? '活动暂未开放' : revealed ? (selected === card ? title + '，' + detail : '奖品展示：' + previewFor(card).title + '，' + previewFor(card).detail) : '选择第 ' + card + ' 张牌'" @tap="$emit('select', card)">
 			<view class="flip-inner">
 				<view class="flip-face flip-back" :aria-hidden="revealed">
 					<view class="flip-texture" :class="{ golden: tint }" :style="background ? { backgroundImage: 'url(' + background + ')' } : {}"></view><view class="flip-border"></view><text class="flip-brand">{{ brand }}</text><text class="flip-en">GUANLANG</text>
@@ -12,7 +12,7 @@
 					<text class="flip-result-kicker">{{ rewardType === 'lose' ? '感谢参与' : '你的奖励' }}</text>
 					<text class="flip-result-title">{{ title }}</text><text class="flip-result-detail">{{ detail }}</text>
 					</template>
-                    <template v-else-if="revealed"><text class="flip-result-kicker">奖池展示</text><text class="flip-result-title">{{ previewFor(card).title }}</text><text class="flip-result-detail">{{ previewFor(card).detail }}</text></template>
+                    <template v-else-if="revealed"><text class="flip-result-kicker">奖品展示</text><text class="flip-result-title">{{ previewFor(card).title }}</text><text class="flip-result-detail">{{ previewFor(card).detail }}</text></template>
 				</view>
 			</view>
 		</button>
@@ -22,8 +22,19 @@
 <script>
 export default {
 	emits: ['select'],
-	methods: { previewFor(card) { return this.previews.length ? this.previews[(card - 1) % this.previews.length] : { title: '活动好礼', detail: '以奖池配置为准' } } },
-	props: { previews: { type: Array, default: () => [] }, theme: String, tint: Boolean, brand: { type: String, default: '倌榔' }, background: String, selected: { type: Number, default: 0 }, busy: Boolean, disabled: Boolean, revealed: Boolean,
+	methods: {
+		previewFor(card) {
+			// The redeem page supplies a per-draw placement map so showcase cards
+			// do not always appear in the same positions. Keep the old relative
+			// order as a fallback for callers that render this component directly.
+			const mapped = Array.isArray(this.previewOrder) ? this.previewOrder[card - 1] : null
+			const index = Number.isInteger(mapped)
+				? mapped
+				: card - 1 - (this.selected > 0 && card > this.selected ? 1 : 0)
+			return this.previews.length ? this.previews[index % this.previews.length] : { title: '暂无其他奖项', detail: '以活动配置为准' }
+		}
+	},
+	props: { previews: { type: Array, default: () => [] }, previewOrder: { type: Array, default: () => [] }, theme: String, tint: Boolean, brand: { type: String, default: '倌榔' }, background: String, selected: { type: Number, default: 0 }, busy: Boolean, disabled: Boolean, revealed: Boolean,
 		rewardType: { type: String, default: 'lose' }, title: String, detail: String }
 }
 </script>

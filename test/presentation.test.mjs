@@ -99,7 +99,7 @@ test('display-only preview prizes remain cosmetic and never replace the server r
 
   assert.equal(app.redeem.cardTitle, '¥2.08')
   assert.equal(app.redeem.result.record.prizeId, won.id)
-  assert.deepEqual(JSON.parse(JSON.stringify(app.redeem.cardPreviews)), [{ title: '加 ¥15', detail: displayOnly.name }])
+  assert.deepEqual(JSON.parse(JSON.stringify(app.redeem.cardPreviews)), [{ title: '加 ¥15', detail: displayOnly.name, img: '' }])
   assert.equal(app.requests.filter(path => path === '/api/customer/draw').length, 1)
 })
 
@@ -198,4 +198,46 @@ test('showcase placement leaves the chosen card empty and assigns every display 
   assert.deepEqual(Array.from(order).filter(Number.isInteger).sort((a, b) => a - b), [0, 1, 2, 3, 4])
   const capped = randomPreviewOrder(3, 6)
   assert.deepEqual(Array.from(capped).filter(Number.isInteger).sort((a, b) => a - b), [0, 1, 2, 3, 4])
+})
+
+test('flip cards use uploaded showcase images and the actual reward snapshot without changing cash cards', async () => {
+  const app = runtime(); await app.signIn()
+  const phone = { id: 'phone', type: 'goods', name: '手机', spec: '512G', img: '/uploads/phone.jpg' }
+  const cash = { id: 'cash', type: 'cash', value: 2.08, img: '/uploads/cash.jpg' }
+  app.reply('/api/customer/draw/preview', { prizes: [], displayPrizes: [phone, cash] })
+  app.reply('/api/customer/draw', { ok: true, record: { id: 'image-record', win: true, prizeId: 'pack', prizeType: 'exchange', prizeValue: 50, exchangeAmount: 15, prizeImg: '/uploads/awarded-pack.jpg', selectedCard: 2 } })
+  app.redeem.code = '123456'; await app.redeem.prepare(); await app.redeem.choose(2)
+  clearTimeout(app.redeem.flipTimer)
+  assert.equal(app.redeem.cardImage, 'https://xbinglangs.oksja.cn/uploads/awarded-pack.jpg')
+  assert.equal(app.redeem.cardTitle, '加 ¥15')
+  assert.equal(app.redeem.cardPreviews[0].img, 'https://xbinglangs.oksja.cn/uploads/phone.jpg')
+  assert.equal(app.redeem.cardPreviews[1].img, '')
+  const { rewardCard } = app.load('utils/presentation.js')
+  assert.equal(rewardCard({ ...phone, img: 'https://cdn.example.test/phone.jpg' }).img, 'https://cdn.example.test/phone.jpg')
+  assert.equal(rewardCard({ ...phone, img: '' }).img, '')
+  app.redeem.result.record.prizeType = 'cash'
+  assert.equal(app.redeem.cardImage, '')
+  app.redeem.result.record.win = false
+  assert.equal(app.redeem.cardImage, '')
+})
+
+test('failed flip-card images fall back to readable text and reset for the next draw', () => {
+  const app = runtime()
+  const options = app.load('components/bl-flip-cards/bl-flip-cards.vue').default
+  const cards = app.instance(options)
+  Object.assign(cards, { selected: 2, revealed: false, rewardType: 'goods', rewardImage: '/uploads/winner.jpg', previews: [{ title: '展示商品', detail: '规格', img: '/uploads/showcase.jpg' }], previewOrder: [] })
+  assert.equal(cards.hasImages, false)
+  cards.revealed = true
+  assert.equal(cards.hasImages, true)
+  assert.equal(cards.imageFor(2), '/uploads/winner.jpg')
+  cards.hideImage(cards.imageFor(1))
+  assert.equal(cards.imageFor(1), '')
+  assert.equal(cards.previewFor(1).title, '展示商品')
+  assert.equal(cards.imageFor(2), '/uploads/winner.jpg')
+  cards.hideImage(cards.imageFor(2))
+  assert.equal(cards.hasImages, false)
+  options.watch.revealed.call(cards, false)
+  assert.equal(cards.imageFor(1), '/uploads/showcase.jpg')
+  cards.rewardType = 'cash'
+  assert.equal(cards.imageFor(2), '')
 })

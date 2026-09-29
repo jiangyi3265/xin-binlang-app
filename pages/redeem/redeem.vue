@@ -15,7 +15,7 @@
    </view>
    <view v-else class="cards-panel">
     <view class="selection-status"><text>兑换码 {{ maskedCode }}</text><text>{{ loading ? '正在确定结果…' : revealed ? '已翻开第 ' + selected + ' 张牌' : activityPaused ? '等待活动开放' : '从下方 6 张牌中选择 1 张' }}</text></view>
-    <bl-flip-cards :brand="cfg.brand" :background="campaign.backgroundImg" :tint="campaign.tintBackground" :theme="campaign.theme" :previews="cardPreviews" :preview-order="previewOrder" :selected="selected" :busy="loading" :disabled="activityPaused" :revealed="revealed" :reward-type="rewardType" :title="cardTitle" :detail="cardDetail" @select="choose" />
+    <bl-flip-cards :brand="cfg.brand" :background="campaign.backgroundImg" :tint="campaign.tintBackground" :theme="campaign.theme" :previews="cardPreviews" :preview-order="previewOrder" :selected="selected" :busy="loading" :disabled="activityPaused" :revealed="revealed" :reward-type="rewardType" :reward-image="cardImage" :title="cardTitle" :detail="cardDetail" @select="choose" />
     <text v-if="revealed" class="preview-note">其余卡片仅展示活动已配置奖项，实际奖励以你选中的卡片为准。</text>
     <text v-if="tip" class="draw-error">{{ tip }}</text>
     <button v-if="activityPaused" class="action primary" :disabled="refreshing" @tap="refreshActivity">{{ refreshing ? '正在刷新…' : '刷新活动状态' }}</button>
@@ -70,6 +70,7 @@ export default {
   activityPaused() { return !this.revealed && !this.selected && (this.errorCode === 'ERR_CLOSED' || (this.cfg.active === false && Boolean(this.cfg.actStart))) },
   maskedCode() { return this.code.slice(0, 2) + '••' + this.code.slice(-2) },
   rewardType() { return this.rec.win ? this.rec.prizeType || 'goods' : 'lose' },
+  cardImage() { return ['goods', 'exchange'].includes(this.rewardType) ? publicAsset(this.rec.prizeImg) : '' },
   cardTitle() { return this.rewardType === 'lose' ? '谢谢惠顾' : this.rewardType === 'cash' ? '¥' + this.rec.prizeValue : this.rewardType === 'exchange' ? '加 ¥' + this.rec.exchangeAmount : '恭喜中奖' },
   cardDetail() { return this.rewardType === 'lose' ? '感谢你的参与' : this.rewardType === 'cash' ? '现金红包' : this.rewardType === 'exchange' ? '换一袋 ¥' + this.rec.prizeValue + ' 商品' : this.rec.prizeName },
   resultTitle() { return this.rewardType === 'lose' ? '谢谢惠顾' : this.rewardType === 'cash' ? this.rec.prizeValue + ' 元现金红包' : this.rec.prizeName },

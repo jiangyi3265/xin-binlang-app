@@ -19,7 +19,8 @@ export function launchContext(options = {}) {
 
 export function rewardCard(prize = {}) {
   return { title: prize.type === 'cash' ? '¥' + prize.value : prize.type === 'exchange' ? '加 ¥' + prize.exchangeAmount : prize.name,
-    detail: prize.type === 'cash' ? '现金红包' : prize.type === 'exchange' ? prize.name || '换购 ¥' + prize.value + ' 商品' : prize.spec || '实物奖品' }
+    detail: prize.type === 'cash' ? '现金红包' : prize.type === 'exchange' ? prize.name || '换购 ¥' + prize.value + ' 商品' : prize.spec || '实物奖品',
+    img: prize.type === 'cash' ? '' : publicAsset(prize.img) }
 }
 
 export function otherRewardCards(prizes = [], record = {}) {

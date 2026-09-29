@@ -1,5 +1,5 @@
 <template>
-	<view class="flip-grid" :class="{ 'has-selection': selected > 0, 'theme-gold': theme === 'gold' }">
+	<view class="flip-grid" :class="{ 'has-selection': selected > 0, 'theme-gold': theme === 'gold', 'has-images': hasImages }">
 		<button v-for="card in 6" :key="card" class="flip-card" :class="{ selected: selected === card, revealed: revealed, muted: selected > 0 && selected !== card, preview: revealed && selected !== card }"
 			:disabled="disabled || busy || selected > 0" role="button" :aria-label="disabled ? '活动暂未开放' : revealed ? (selected === card ? title + '，' + detail : '奖品展示：' + previewFor(card).title + '，' + previewFor(card).detail) : '选择第 ' + card + ' 张牌'" @tap="$emit('select', card)">
 			<view class="flip-inner">
@@ -7,12 +7,17 @@
 					<view class="flip-texture" :class="{ golden: tint }" :style="background ? { backgroundImage: 'url(' + background + ')' } : {}"></view><view class="flip-border"></view><text class="flip-brand">{{ brand }}</text><text class="flip-en">GUANLANG</text>
 					<view class="flip-mark">礼</view><text class="flip-prompt">{{ disabled ? '暂未开放' : busy && selected === card ? '正在开奖' : '选我翻牌' }}</text>
 				</view>
-				<view class="flip-face flip-front" :aria-hidden="!revealed" :class="'reward-' + rewardType">
+				<view class="flip-face flip-front" :aria-hidden="!revealed" :class="['reward-' + rewardType, { 'has-image': revealed && imageFor(card) }]">
 					<template v-if="selected === card">
 					<text class="flip-result-kicker">{{ rewardType === 'lose' ? '感谢参与' : '你的奖励' }}</text>
+					<image v-if="revealed && imageFor(card)" class="flip-result-image" :src="imageFor(card)" mode="aspectFit" aria-hidden="true" @error="hideImage(imageFor(card))" />
 					<text class="flip-result-title">{{ title }}</text><text class="flip-result-detail">{{ detail }}</text>
 					</template>
-                    <template v-else-if="revealed"><text class="flip-result-kicker">奖品展示</text><text class="flip-result-title">{{ previewFor(card).title }}</text><text class="flip-result-detail">{{ previewFor(card).detail }}</text></template>
+                    <template v-else-if="revealed">
+                        <text class="flip-result-kicker">奖品展示</text>
+                        <image v-if="imageFor(card)" class="flip-result-image" :src="imageFor(card)" mode="aspectFit" aria-hidden="true" @error="hideImage(imageFor(card))" />
+                        <text class="flip-result-title">{{ previewFor(card).title }}</text><text class="flip-result-detail">{{ previewFor(card).detail }}</text>
+                    </template>
 				</view>
 			</view>
 		</button>
@@ -22,7 +27,21 @@
 <script>
 export default {
 	emits: ['select'],
+	data() { return { failedImages: {} } },
+	computed: {
+		hasImages() { return this.revealed && [1, 2, 3, 4, 5, 6].some(card => Boolean(this.imageFor(card))) }
+	},
+	watch: {
+		revealed(value) { if (!value) this.failedImages = {} }
+	},
 	methods: {
+		imageFor(card) {
+			const src = this.selected === card
+				? (['goods', 'exchange'].includes(this.rewardType) ? this.rewardImage : '')
+				: this.previewFor(card).img
+			return src && !this.failedImages[src] ? src : ''
+		},
+		hideImage(src) { if (src) this.failedImages = { ...this.failedImages, [src]: true } },
 		previewFor(card) {
 			// The redeem page supplies a per-draw placement map so showcase cards
 			// do not always appear in the same positions. Keep the old relative
@@ -35,7 +54,7 @@ export default {
 		}
 	},
 	props: { previews: { type: Array, default: () => [] }, previewOrder: { type: Array, default: () => [] }, theme: String, tint: Boolean, brand: { type: String, default: '倌榔' }, background: String, selected: { type: Number, default: 0 }, busy: Boolean, disabled: Boolean, revealed: Boolean,
-		rewardType: { type: String, default: 'lose' }, title: String, detail: String }
+		rewardType: { type: String, default: 'lose' }, rewardImage: String, title: String, detail: String }
 }
 </script>
 
@@ -58,4 +77,9 @@ export default {
 .flip-result-detail{font-size:21rpx;line-height:1.5;color:#94692b}.reward-lose{background:#f7f9fc;border-color:#bbcbda}.reward-lose .flip-result-title{font-size:30rpx}.reward-cash{background:#fff7e7}
 @media(prefers-reduced-motion:reduce){.flip-inner,.flip-card{transition:none}}
 .flip-card.preview{opacity:1}
+.has-images .flip-card{height:320rpx}
+.has-image{padding:14rpx 12rpx}
+.flip-result-image{display:block;flex-shrink:0;width:100%;height:112rpx;margin:10rpx 0 8rpx}
+.has-image .flip-result-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;flex-shrink:0;max-width:100%;font-size:25rpx;line-height:1.2;margin:0 0 6rpx}
+.has-image .flip-result-detail{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%;font-size:20rpx;line-height:1.35}
 </style>
